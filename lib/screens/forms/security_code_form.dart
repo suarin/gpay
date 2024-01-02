@@ -10,12 +10,10 @@ class SecurityCodeForm extends StatefulWidget {
 }
 
 class _SecurityCodeFormState extends State<SecurityCodeForm> {
-
   var screenSize, screenWidth, screenHeight;
 
   @override
   Widget build(BuildContext context) {
-
     screenSize = MediaQuery.of(context).size;
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
@@ -26,11 +24,11 @@ class _SecurityCodeFormState extends State<SecurityCodeForm> {
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
         title: const Text(
           "Cambiar Web Pin",
-          style:  TextStyle(
+          style: TextStyle(
             color: Colors.white,
             fontFamily: 'VarealRoundRegular',
             fontSize: 20.0,
@@ -53,32 +51,29 @@ class _SecurityCodeFormState extends State<SecurityCodeForm> {
                   child: ListView(
                     children: [
                       Container(
-                        child:  const TextField(
+                        child: const TextField(
                           decoration: InputDecoration(
                               label: Text(
                                 "Nuevo PIN Web",
-                                style:  TextStyle(
+                                style: TextStyle(
                                   color: Colors.black26,
                                   fontFamily: 'VarelaRoundRegular',
                                 ),
                               ),
-                              border: InputBorder.none
-                          ),
+                              border: InputBorder.none),
                           keyboardType: TextInputType.phone,
                           obscureText: true,
                         ),
                         decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Colors.black
-                            ),
-                            borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                        ),
+                            border: Border.all(color: Colors.black),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(30.0))),
                         margin: const EdgeInsets.only(bottom: 15.0),
                         padding: const EdgeInsets.only(left: 10.0),
                         width: 300,
                       ),
                       Container(
-                        child:  const TextField(
+                        child: const TextField(
                           decoration: InputDecoration(
                               label: Text(
                                 "Repetir PIN Web",
@@ -87,38 +82,34 @@ class _SecurityCodeFormState extends State<SecurityCodeForm> {
                                   fontFamily: 'VarelaRoundRegular',
                                 ),
                               ),
-                              border: InputBorder.none
-                          ),
+                              border: InputBorder.none),
                           keyboardType: TextInputType.phone,
                           obscureText: true,
                         ),
                         decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Colors.black
-                            ),
-                            borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                        ),
+                            border: Border.all(color: Colors.black),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(30.0))),
                         margin: const EdgeInsets.only(bottom: 15.0),
                         padding: const EdgeInsets.only(left: 10.0),
                         width: 300,
                       ),
                       Container(
                         child: TextButton(
-                          child:  const Text(
+                          child: const Text(
                             "Cambiar",
-                            style:  TextStyle(
+                            style: TextStyle(
                                 color: Color(0xFF194D82),
                                 fontFamily: 'VarelaRoundRegular',
                                 fontWeight: FontWeight.bold,
-                                fontSize: 20.0
-                            ),
+                                fontSize: 20.0),
                           ),
-                          onPressed: (){},
+                          onPressed: () {},
                         ),
                         decoration: const BoxDecoration(
                             color: Color(0xFF00FFD5),
-                            borderRadius: BorderRadius.all(Radius.circular(25.0))
-                        ),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(25.0))),
                         width: 300.0,
                       ),
                     ],

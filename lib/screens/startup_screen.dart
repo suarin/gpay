@@ -19,17 +19,15 @@ class _StartupScreenState extends State<StartupScreen> {
     if (await canLaunch(url)) {
       await launch(url);
     } else {
-    throw 'Could not launch $url';
-  }
+      throw 'Could not launch $url';
+    }
   }
 
   _openEmail() async {
-    launch(
-    "mailto:soportecliente@gpspay.me?subject=Ayuda Email&body=");
+    launch("mailto:soportecliente@gpspay.me?subject=Ayuda Email&body=");
   }
 
-  _showHelpOptions(BuildContext context){
-
+  _showHelpOptions(BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -39,14 +37,18 @@ class _StartupScreenState extends State<StartupScreen> {
           child: Center(
             child: Column(
               children: <Widget>[
-                IconButton(onPressed: (){
-                  _openEmail();
-                }, icon: const Icon(Icons.attach_email)),
-                IconButton(onPressed: (){
-                  _openURL();
-                }, icon: const Icon(Icons.chat)),
+                IconButton(
+                    onPressed: () {
+                      _openEmail();
+                    },
+                    icon: const Icon(Icons.attach_email)),
+                IconButton(
+                    onPressed: () {
+                      _openURL();
+                    },
+                    icon: const Icon(Icons.chat)),
                 ElevatedButton(
-                  child:  Text(S.of(context).close),
+                  child: Text(S.of(context).close),
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     primary: const Color(0XFF0E325F),
@@ -58,11 +60,10 @@ class _StartupScreenState extends State<StartupScreen> {
         );
       },
     );
-
   }
+
   @override
   Widget build(BuildContext context) {
-
     screenSize = MediaQuery.of(context).size;
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
@@ -76,15 +77,20 @@ class _StartupScreenState extends State<StartupScreen> {
                 child: SizedBox(
                   child: Image.asset(
                     'images/backgrounds/page_header.png',
-                    fit: BoxFit.fitWidth,
+                    fit: BoxFit.cover,
                   ),
                   height: screenHeight / 2,
                 ),
               ),
               Positioned(
-                child: Image.asset('images/logos/gpay_white_logo_271x125.png'),
-                top: screenHeight / 8,
-                left: (screenWidth - 271) / 2,
+                child: SizedBox(
+                  child:
+                      Image.asset('images/logos/gpay_white_logo_271x125.png'),
+                  height: 75,
+                  width: 370,
+                ),
+                top: screenHeight / 6,
+                left: (screenWidth - 370) / 2,
               ),
               Positioned(
                 child: Column(
@@ -92,71 +98,65 @@ class _StartupScreenState extends State<StartupScreen> {
                     Container(
                       child: TextButton(
                         child: Text(
-                            S.of(context).signIn,
+                          S.of(context).signIn,
                           style: const TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'VarelaRoundRegular',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.0
-                          ),
+                              color: Colors.white,
+                              fontFamily: 'VarelaRoundRegular',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20.0),
                         ),
-                        onPressed: (){
+                        onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (context){
-                                return LoginScreen();
-                              }
-                            ),
+                            MaterialPageRoute(builder: (context) {
+                              return LoginScreen();
+                            }),
                           );
                         },
                       ),
                       decoration: const BoxDecoration(
-                        color: Color(0xFF00FFD5),
-                        borderRadius: BorderRadius.all(Radius.circular(25.0))
-                      ),
+                          color: Color(0xFF00CAB2),
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(25.0))),
                       margin: const EdgeInsets.only(bottom: 10.0),
                       width: 300,
                     ),
-                   Container(
-                     child:  TextButton(
-                       child:  Text(
-                           S.of(context).signUp,
-                         style: const TextStyle(
-                           color: Colors.black,
-                           fontFamily: 'VarelaRoundRegular',
-                           fontWeight: FontWeight.bold,
-                           fontSize: 20.0
-                         ),
-                       ),
-                       onPressed: (){
-                         Navigator.push(
-                           context,
-                           MaterialPageRoute(
-                             builder: (context) => const RegistrationForm()
-                           ),
-                         );
-                       },
-                     ),
-                     decoration: const BoxDecoration(
-                       color: Color(0xFF00FFD5),
-                       borderRadius: BorderRadius.all(Radius.circular(25.0))
-                     ),
-                     margin: const EdgeInsets.only(bottom: 20.0),
-                     width: 300.0,
-                   ),
+                    Container(
+                      child: TextButton(
+                        child: Text(
+                          S.of(context).signUp,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'VarelaRoundRegular',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20.0),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const RegistrationForm()),
+                          );
+                        },
+                      ),
+                      decoration: const BoxDecoration(
+                          color: Color(0xFF00CAB2),
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(25.0))),
+                      margin: const EdgeInsets.only(bottom: 20.0),
+                      width: 300.0,
+                    ),
                     Container(
                       child: TextButton(
                         child: Text(
                           S.of(context).help,
                           style: const TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'VarelaRoundRegular',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25.0
-                          ),
+                              color: Color(0XFF01ACCA),
+                              fontFamily: 'VarelaRoundRegular',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25.0),
                         ),
-                        onPressed: (){
+                        onPressed: () {
                           _showHelpOptions(context);
                         },
                       ),
@@ -164,14 +164,16 @@ class _StartupScreenState extends State<StartupScreen> {
                   ],
                 ),
                 top: screenHeight / 2,
-                left: (screenWidth  - 300) / 2,
+                left: (screenWidth - 300) / 2,
               ),
               Positioned(
                 child: SizedBox(
                   child: Image.asset('images/logos/gpay_blue_logo_87x40.png'),
+                  width: 100,
+                  height: 20.3,
                 ),
-                top: screenHeight - 75.0,
-                left: (screenWidth - 87) / 2,
+                top: screenHeight - 60.0,
+                left: (screenWidth - 100) / 2,
               )
             ],
           ),
@@ -182,5 +184,3 @@ class _StartupScreenState extends State<StartupScreen> {
     );
   }
 }
-
-

@@ -5,14 +5,15 @@ import 'package:gpay/services/general_services.dart';
 import 'package:gpay/services/system_errors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class VisaRequestForm  extends StatefulWidget {
+class VisaRequestForm extends StatefulWidget {
   const VisaRequestForm({Key? key}) : super(key: key);
 
   @override
   _VisaRequestForm createState() => _VisaRequestForm();
 }
 
-class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserver{
+class _VisaRequestForm extends State<VisaRequestForm>
+    with WidgetsBindingObserver {
   //Variables
   var screenSize, screenWidth, screenHeight;
   final _formKey = GlobalKey<FormState>();
@@ -27,8 +28,8 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
   AuthorizationResponse authorizationResponse = AuthorizationResponse();
 
   //functions for dialogs
-  _showSuccessResponse(BuildContext context, AuthorizationResponse authorizationResponse){
-
+  _showSuccessResponse(
+      BuildContext context, AuthorizationResponse authorizationResponse) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -46,17 +47,17 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                       children: [
                         Row(
                           children: [
-                             SizedBox(
+                            SizedBox(
                               child: Text(
                                 S.of(context).authorization,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold
-                                ),
+                                    fontWeight: FontWeight.bold),
                               ),
                               width: 150,
                             ),
                             SizedBox(
-                              child: Text(authorizationResponse.authNo.toString()),
+                              child:
+                                  Text(authorizationResponse.authNo.toString()),
                               width: 150,
                             ),
                           ],
@@ -66,7 +67,7 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                     margin: const EdgeInsets.only(left: 40),
                   ),
                   ElevatedButton(
-                    child:  Text(S.of(context).close),
+                    child: Text(S.of(context).close),
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0XFF0E325F),
@@ -79,10 +80,9 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
         );
       },
     );
-
   }
 
-  _showErrorResponse(BuildContext context, String errorMessage){
+  _showErrorResponse(BuildContext context, String errorMessage) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -95,11 +95,14 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  child: Text(errorMessage, style: const TextStyle(color: Colors.white),),
+                  child: Text(
+                    errorMessage,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                   margin: const EdgeInsets.only(left: 40.0),
                 ),
                 ElevatedButton(
-                  child:  Text(S.of(context).close),
+                  child: Text(S.of(context).close),
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     primary: const Color(0XFF0E325F),
@@ -114,20 +117,20 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
   }
 
   //Check response
-  _checkResponse(BuildContext context, dynamic json) async{
-    if(json['ErrorCode'] == 0){
-
-      AuthorizationResponse  authorizationResponse = AuthorizationResponse.fromJson(json);
+  _checkResponse(BuildContext context, dynamic json) async {
+    if (json['ErrorCode'] == 0) {
+      AuthorizationResponse authorizationResponse =
+          AuthorizationResponse.fromJson(json);
       _showSuccessResponse(context, authorizationResponse);
-
-    } else{
-      String errorMessage = await SystemErrors.getSystemError(json['ErrorCode']);
+    } else {
+      String errorMessage =
+          await SystemErrors.getSystemError(json['ErrorCode']);
       _showErrorResponse(context, errorMessage);
     }
   }
 
   //Reset form
-  _resetForm(){
+  _resetForm() {
     setState(() {
       isProcessing = false;
       _phoneController.text = '';
@@ -144,12 +147,20 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
     setState(() {
       isProcessing = true;
     });
-    await GeneralServices.getVisaRequest(_passwordController.text,_addressController.text,_cityController.text,_provinceController.text,_zipController.text, _phoneController.text)
+    await GeneralServices.getVisaRequest(
+            _passwordController.text,
+            _addressController.text,
+            _cityController.text,
+            _provinceController.text,
+            _zipController.text,
+            _phoneController.text)
         .then((response) => {
-      if(response['ErrorCode'] != null){
-        _checkResponse(context, response),
-      }
-    }).catchError((error){
+              if (response['ErrorCode'] != null)
+                {
+                  _checkResponse(context, response),
+                }
+            })
+        .catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -166,16 +177,17 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
     _resetForm();
   }
 
-  _offScanning() async{
+  _offScanning() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isScanning',false);
+    await prefs.setBool('isScanning', false);
   }
 
   @override
-  void initState(){
+  void initState() {
     _offScanning();
     super.initState();
   }
+
   Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
     screenHeight = MediaQuery.of(context).size.height;
@@ -186,9 +198,9 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
-        title:  Text(
+        title: Text(
           S.of(context).visaRequest,
           style: const TextStyle(
             color: Colors.white,
@@ -200,7 +212,7 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
       ),
       key: scaffoldStateKey,
       body: Builder(
-        builder: (context)=>Form(
+        builder: (context) => Form(
           child: SizedBox(
             child: SafeArea(
               child: Stack(
@@ -217,7 +229,7 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                         children: [
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).address,
                                     style: const TextStyle(
@@ -225,10 +237,9 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                                  border: InputBorder.none),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -236,17 +247,17 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).city,
                                     style: const TextStyle(
@@ -254,10 +265,9 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                                  border: InputBorder.none),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -265,17 +275,17 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).province,
                                     style: const TextStyle(
@@ -283,10 +293,9 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                                  border: InputBorder.none),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -294,17 +303,17 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).postalCode,
                                     style: const TextStyle(
@@ -312,10 +321,9 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                                  border: InputBorder.none),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -324,10 +332,10 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
@@ -342,10 +350,9 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                                  border: InputBorder.none),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -354,17 +361,17 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).password,
                                     style: const TextStyle(
@@ -372,11 +379,10 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
+                                  border: InputBorder.none),
                               obscureText: true,
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -384,10 +390,10 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
@@ -395,25 +401,24 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                           Visibility(
                             child: Container(
                               child: TextButton(
-                                child:  Text(
+                                child: Text(
                                   S.of(context).send,
                                   style: const TextStyle(
-                                      color: Color(0xFF194D82),
+                                      color: Colors.white,
                                       fontFamily: 'VarelaRoundRegular',
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 20.0
-                                  ),
+                                      fontSize: 20.0),
                                 ),
-                                onPressed: (){
-                                  if(_formKey.currentState!.validate()){
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
                                     _executeTransaction(context);
                                   }
                                 },
                               ),
                               decoration: const BoxDecoration(
-                                  color: Color(0xFF00FFD5),
-                                  borderRadius: BorderRadius.all(Radius.circular(25.0))
-                              ),
+                                  color: Color(0xFF00CAB2),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(25.0))),
                               width: 300.0,
                             ),
                             visible: !isProcessing,
@@ -429,16 +434,14 @@ class _VisaRequestForm extends State<VisaRequestForm> with WidgetsBindingObserve
                   Positioned(
                     child: Visibility(
                       child: Container(
-                        child:  Text(
+                        child: Text(
                           S.of(context).processing,
                           style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'VarelaRoundRegular',
                           ),
                         ),
-                        decoration: const BoxDecoration(
-                            color: Colors.grey
-                        ),
+                        decoration: const BoxDecoration(color: Colors.grey),
                         height: 50.0,
                         width: screenWidth,
                         padding: const EdgeInsets.all(10.0),

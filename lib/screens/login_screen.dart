@@ -15,18 +15,17 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   //Variables
   var screenSize, screenWidth, screenHeight;
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> scaffoldStateKey = GlobalKey<ScaffoldState>();
-    final _userController = TextEditingController();
+  final _userController = TextEditingController();
   final _passwordController = TextEditingController();
   String userID = '';
   bool isProcessing = false;
 
   //functions for dialogs
-  _showErrorResponse(BuildContext context, String errorMessage){
+  _showErrorResponse(BuildContext context, String errorMessage) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -39,11 +38,14 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  child: Text(errorMessage, style: const TextStyle(color: Colors.white),),
+                  child: Text(
+                    errorMessage,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                   margin: const EdgeInsets.only(left: 40.0),
                 ),
                 ElevatedButton(
-                  child:  Text(S.of(context).close),
+                  child: Text(S.of(context).close),
                   onPressed: () => Navigator.pop(context),
                 )
               ],
@@ -55,10 +57,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   //Check response
-  _checkResponse(BuildContext context, dynamic json) async{
-    if(json['ErrorCode'] == 0){
-
-      LoginSuccessResponse  loginSuccessResponse =  LoginSuccessResponse.fromJson(json);
+  _checkResponse(BuildContext context, dynamic json) async {
+    if (json['ErrorCode'] == 0) {
+      LoginSuccessResponse loginSuccessResponse =
+          LoginSuccessResponse.fromJson(json);
       final prefs = await SharedPreferences.getInstance();
 
       await prefs.setInt('cHolderID', loginSuccessResponse.cHolderID!);
@@ -67,28 +69,24 @@ class _LoginScreenState extends State<LoginScreen> {
       await prefs.setString('cardNo', loginSuccessResponse.cardNo!);
       await prefs.setString('currency', loginSuccessResponse.currency!);
       await prefs.setString('balance', loginSuccessResponse.balance!);
-      await prefs.setBool('isScanning',false);
+      await prefs.setBool('isScanning', false);
 
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context)=> const PrincipalScreen())
-      );
-
-    } else{
-      String errorMessage = await SystemErrors.getSystemError(json['ErrorCode']);
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const PrincipalScreen()));
+    } else {
+      String errorMessage =
+          await SystemErrors.getSystemError(json['ErrorCode']);
       _showErrorResponse(context, errorMessage);
     }
   }
 
   //reset form
-  _resetForm(){
-
+  _resetForm() {
     setState(() {
       isProcessing = false;
       _userController.text = '';
       _passwordController.text = '';
     });
-
   }
 
   //Execute registration
@@ -97,12 +95,15 @@ class _LoginScreenState extends State<LoginScreen> {
       isProcessing = true;
       userID = _userController.text;
     });
-    await GeneralServices.getLogin(_userController.text, _passwordController.text)
+    await GeneralServices.getLogin(
+            _userController.text, _passwordController.text)
         .then((response) => {
-      if(response['ErrorCode'] != null){
-        _checkResponse(context, response),
-      }
-    }).catchError((error){
+              if (response['ErrorCode'] != null)
+                {
+                  _checkResponse(context, response),
+                }
+            })
+        .catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -112,7 +113,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           backgroundColor: Colors.red,
-        ),);
+        ),
+      );
       _resetForm();
     });
     _resetForm();
@@ -120,7 +122,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
 
@@ -128,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         key: scaffoldStateKey,
         body: Builder(
-          builder: (context)=>Form(
+          builder: (context) => Form(
             key: _formKey,
             child: SizedBox(
               child: SafeArea(
@@ -140,12 +141,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           'images/backgrounds/page_header.png',
                           fit: BoxFit.fill,
                         ),
-                        height: screenHeight / 2.35,
+                        height: screenHeight / 3,
                         width: screenWidth,
                       ),
                     ),
                     Positioned(
-                      child:  SizedBox(
+                      child: SizedBox(
                         child: Text(
                           S.of(context).welcome,
                           style: const TextStyle(
@@ -157,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         width: 260,
                       ),
-                      top: screenHeight / 6,
+                      top: screenHeight / 8,
                       left: (screenWidth - 275) / 2,
                     ),
                     Positioned(
@@ -166,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             Container(
                               child: TextFormField(
-                                decoration:  InputDecoration(
+                                decoration: InputDecoration(
                                     label: Text(
                                       S.of(context).user,
                                       style: const TextStyle(
@@ -174,21 +175,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                         fontFamily: 'VarelaRoundRegular',
                                       ),
                                     ),
-                                    border: InputBorder.none
-                                ),
+                                    border: InputBorder.none),
                                 keyboardType: TextInputType.emailAddress,
-                                validator: (value){
-                                  if(value == null || value.isEmpty){
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
                                     return S.of(context).required;
                                   }
                                 },
                                 controller: _userController,
                               ),
-                              decoration:  BoxDecoration(
-                                border: Border.all(
-                                    color: Colors.black
-                                ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                              decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: const Color(0XFF01ACCA)),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0)),
                               ),
                               margin: const EdgeInsets.only(bottom: 15.0),
                               padding: const EdgeInsets.only(left: 10.0),
@@ -204,21 +204,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                         fontFamily: 'VarelaRoundRegular',
                                       ),
                                     ),
-                                    border: InputBorder.none
-                                ),
-                                validator: (value){
-                                  if(value == null || value.isEmpty){
+                                    border: InputBorder.none),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
                                     return S.of(context).required;
                                   }
                                 },
                                 controller: _passwordController,
                                 obscureText: true,
                               ),
-                              decoration:  BoxDecoration(
-                                border: Border.all(
-                                    color: Colors.black
-                                ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                              decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: const Color(0XFF01ACCA)),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0)),
                               ),
                               margin: const EdgeInsets.only(bottom: 15.0),
                               padding: const EdgeInsets.only(left: 10.0),
@@ -233,17 +232,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                         color: Colors.white,
                                         fontFamily: 'VarelaRoundRegular',
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 20.0
-                                    ),
+                                        fontSize: 20.0),
                                   ),
-                                  onPressed: (){
+                                  onPressed: () {
                                     _executeTransaction(context);
                                   },
                                 ),
                                 decoration: const BoxDecoration(
-                                    color: Color(0xFF194D82),
-                                    borderRadius: BorderRadius.all(Radius.circular(30.0))
-                                ),
+                                    color: Color(0xFF00CAB2),
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(30.0))),
                                 height: 60.0,
                                 margin: const EdgeInsets.only(bottom: 5.0),
                               ),
@@ -254,19 +252,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Text(
                                   S.of(context).signUp,
                                   style: const TextStyle(
-                                      color: Colors.black38,
+                                      color: Color(0XFF01ACCA),
                                       fontFamily: 'VarelaRoundRegular',
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 18.0
-                                  ),
+                                      fontSize: 18.0),
                                 ),
-                                onPressed: (){
+                                onPressed: () {
                                   Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const RegistrationForm()
-                                    )
-                                  );
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RegistrationForm()));
                                 },
                               ),
                               margin: const EdgeInsets.only(bottom: 5.0),
@@ -277,12 +273,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 300.0,
                         width: 300.0,
                       ),
-                      top: screenHeight / 2.20,
-                      left: (screenWidth -300) / 2,
+                      top: screenHeight / 3,
+                      left: (screenWidth - 300) / 2,
                     ),
                     Positioned(
                       child: SizedBox(
-                        child: Image.asset('images/logos/gpay_blue_logo_87x40.png'),
+                        child: Image.asset(
+                            'images/logos/gpay_blue_logo_87x40.png'),
                         width: 87,
                       ),
                       top: screenHeight - 130,
@@ -291,16 +288,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     Positioned(
                       child: Visibility(
                         child: Container(
-                          child:  Text(
+                          child: Text(
                             S.of(context).processing,
                             style: const TextStyle(
                               color: Colors.white,
                               fontFamily: 'VarelaRoundRegular',
                             ),
                           ),
-                          decoration: const BoxDecoration(
-                              color: Colors.grey
-                          ),
+                          decoration: const BoxDecoration(color: Colors.grey),
                           height: 50.0,
                           width: screenWidth,
                           padding: const EdgeInsets.all(10.0),

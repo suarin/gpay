@@ -12,7 +12,6 @@ class AirTmForm extends StatefulWidget {
 }
 
 class _AirTmFormState extends State<AirTmForm> {
-
   //Variables
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> scaffoldStateKey = GlobalKey<ScaffoldState>();
@@ -21,20 +20,18 @@ class _AirTmFormState extends State<AirTmForm> {
   AirTmLoadResponse airTmLoadResponse = AirTmLoadResponse();
   bool isProcessing = false;
 
-
   //Check response
-  _checkResponse(BuildContext context, dynamic json) async{
-    AirTmLoadResponse  airTmLoadResponse = AirTmLoadResponse.fromJson(json);
+  _checkResponse(BuildContext context, dynamic json) async {
+    AirTmLoadResponse airTmLoadResponse = AirTmLoadResponse.fromJson(json);
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context)=> AirTmWebView(airTmUrl: airTmLoadResponse.url)
-        )
-    );
+            builder: (context) =>
+                AirTmWebView(airTmUrl: airTmLoadResponse.url)));
   }
 
   //Reset form
-  _resetForm(){
+  _resetForm() {
     setState(() {
       isProcessing = false;
       _passwordController.text = '';
@@ -47,12 +44,15 @@ class _AirTmFormState extends State<AirTmForm> {
     setState(() {
       isProcessing = true;
     });
-    await RechargeServices.getLoadAirTm(_passwordController.text, _amountController.text)
+    await RechargeServices.getLoadAirTm(
+            _passwordController.text, _amountController.text)
         .then((response) => {
-      if(response['url'] != null){
-        _checkResponse(context, response),
-      }
-    }).catchError((error){
+              if (response['url'] != null)
+                {
+                  _checkResponse(context, response),
+                }
+            })
+        .catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -79,9 +79,9 @@ class _AirTmFormState extends State<AirTmForm> {
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
-        title:  Text(
+        title: Text(
           '${S.of(context).loads} AIRTM',
           style: const TextStyle(
             color: Colors.white,
@@ -93,8 +93,8 @@ class _AirTmFormState extends State<AirTmForm> {
       ),
       key: scaffoldStateKey,
       body: Builder(
-        builder: (context)=>Form(
-          key:_formKey,
+        builder: (context) => Form(
+          key: _formKey,
           child: SizedBox(
             child: SafeArea(
               child: Stack(
@@ -111,19 +111,18 @@ class _AirTmFormState extends State<AirTmForm> {
                         children: [
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
-                                   S.of(context).amount,
+                                    S.of(context).amount,
                                     style: const TextStyle(
                                       color: Colors.black26,
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
+                                  border: InputBorder.none),
                               keyboardType: TextInputType.phone,
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -131,28 +130,27 @@ class _AirTmFormState extends State<AirTmForm> {
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
-                                     S.of(context).password,
+                                    S.of(context).password,
                                     style: const TextStyle(
                                       color: Colors.black26,
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                                  border: InputBorder.none),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -161,10 +159,10 @@ class _AirTmFormState extends State<AirTmForm> {
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
@@ -172,25 +170,24 @@ class _AirTmFormState extends State<AirTmForm> {
                           Visibility(
                             child: Container(
                               child: TextButton(
-                                child:  Text(
+                                child: Text(
                                   S.of(context).send,
                                   style: const TextStyle(
-                                      color: Color(0xFF194D82),
+                                      color: Colors.white,
                                       fontFamily: 'VarelaRoundRegular',
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 20.0
-                                  ),
+                                      fontSize: 20.0),
                                 ),
-                                onPressed: (){
-                                  if(_formKey.currentState!.validate()){
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
                                     _executeTransaction(context);
                                   }
                                 },
                               ),
                               decoration: const BoxDecoration(
-                                  color: Color(0xFF00FFD5),
-                                  borderRadius: BorderRadius.all(Radius.circular(25.0))
-                              ),
+                                  color: Color(0xFF00CAB2),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(25.0))),
                               width: 300.0,
                             ),
                             visible: !isProcessing,
@@ -206,16 +203,14 @@ class _AirTmFormState extends State<AirTmForm> {
                   Positioned(
                     child: Visibility(
                       child: Container(
-                        child:  Text(
+                        child: Text(
                           S.of(context).processing,
                           style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'VarelaRoundRegular',
                           ),
                         ),
-                        decoration: const BoxDecoration(
-                            color: Colors.grey
-                        ),
+                        decoration: const BoxDecoration(color: Colors.grey),
                         height: 50.0,
                         width: screenWidth,
                         padding: const EdgeInsets.all(10.0),
@@ -235,4 +230,3 @@ class _AirTmFormState extends State<AirTmForm> {
     );
   }
 }
-

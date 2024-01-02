@@ -16,13 +16,12 @@ class TransactionForm extends StatefulWidget {
   _TransactionFormState createState() => _TransactionFormState();
 }
 
-class _TransactionFormState extends State<TransactionForm> with WidgetsBindingObserver{
-
+class _TransactionFormState extends State<TransactionForm>
+    with WidgetsBindingObserver {
   //Variables
   final GlobalKey<ScaffoldState> scaffoldStateKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   final _endDateController = TextEditingController();
-  final _virtualCardController = TextEditingController();
   bool transactionsLoaded = false;
   bool isProcessing = false;
   bool showButton = true;
@@ -37,15 +36,15 @@ class _TransactionFormState extends State<TransactionForm> with WidgetsBindingOb
   //function to obtain bank account for picker
   _getVirtualCard() async {
     await GeneralServices.getVirtualCards().then((list) => {
-      setState(() {
-        cards = Cards.fromJson(list);
-        cardsLoaded = true;
-      })
-    });
+          setState(() {
+            cards = Cards.fromJson(list);
+            cardsLoaded = true;
+          })
+        });
   }
 
   //Functions for dialogs
-  _showErrorResponse(BuildContext context, String errorMessage){
+  _showErrorResponse(BuildContext context, String errorMessage) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -58,11 +57,14 @@ class _TransactionFormState extends State<TransactionForm> with WidgetsBindingOb
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  child: Text(errorMessage, style: const TextStyle(color: Colors.white),),
+                  child: Text(
+                    errorMessage,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                   margin: const EdgeInsets.only(left: 40.0),
                 ),
                 ElevatedButton(
-                  child:  Text(S.of(context).close),
+                  child: Text(S.of(context).close),
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     primary: const Color(0XFF0E325F),
@@ -77,39 +79,42 @@ class _TransactionFormState extends State<TransactionForm> with WidgetsBindingOb
   }
 
   //Reset Form
-  _resetForm(){
-
+  _resetForm() {
     setState(() {
       isProcessing = false;
-      if(transactionsLoaded){
+      if (transactionsLoaded) {
         showButton = false;
-      }else{
+      } else {
         showButton = true;
       }
     });
-
   }
+
   //Function to obtain transactions
-  _getTransactions() async{
+  _getTransactions() async {
     setState(() {
       isProcessing = true;
       showButton = false;
     });
-    await PurchaseService.getVirtualTransactions(selectedCard!.cardNo.toString(), _endDateController.text).then((list) => {
-      virtualTransactionsResponse = VirtualTransactionsResponse.fromJson(list),
-      setState(() {
-        transactionsLoaded = true;
-      })
-    }).catchError((error){
+    await PurchaseService.getVirtualTransactions(
+            selectedCard!.cardNo.toString(), _endDateController.text)
+        .then((list) => {
+              virtualTransactionsResponse =
+                  VirtualTransactionsResponse.fromJson(list),
+              setState(() {
+                transactionsLoaded = true;
+              })
+            })
+        .catchError((error) {
       _showErrorResponse(context, error.toString());
       _resetForm();
     });
     _resetForm();
   }
 
-  _offScanning() async{
+  _offScanning() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isScanning',false);
+    await prefs.setBool('isScanning', false);
   }
 
   @override
@@ -118,21 +123,21 @@ class _TransactionFormState extends State<TransactionForm> with WidgetsBindingOb
     _getVirtualCard();
     super.initState();
   }
-  Widget build(BuildContext context) {
 
+  Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
-        title:  Text(
+        title: Text(
           S.of(context).virtualCardTransactions,
           style: const TextStyle(
             color: Colors.white,
@@ -162,69 +167,73 @@ class _TransactionFormState extends State<TransactionForm> with WidgetsBindingOb
                           Visibility(
                             child: cardsLoaded
                                 ? Container(
-                              child: DropdownButton<PlasticCard>(
-                                hint:  Text(
-                                  S.of(context).selectCard,
-                                  style: const TextStyle(
-                                    color: Colors.black26,
-                                    fontFamily: 'VarelaRoundRegular',
-                                  ),
-                                ),
-                                value: selectedCard,
-                                onChanged: (PlasticCard? value) {
-                                  setState(() {
-                                    selectedCard = value;
-                                  });
-                                },
-                                items: cards!.cards!
-                                    .map((PlasticCard plasticCard) {
-                                  return DropdownMenuItem<PlasticCard>(
-                                    value: plasticCard,
-                                    child: Container(
-                                      padding: const EdgeInsets.only(
-                                          left: 5.0),
-                                      width: 250,
-                                      child: Text(
-                                        '******${plasticCard.cardNo!.substring(12)} ${plasticCard.holderName}',
+                                    child: DropdownButton<PlasticCard>(
+                                      hint: Text(
+                                        S.of(context).selectCard,
                                         style: const TextStyle(
-                                          color: Colors.black,
-                                          fontFamily:
-                                          'VarelaRoundRegular',
+                                          color: Colors.black26,
+                                          fontFamily: 'VarelaRoundRegular',
                                         ),
                                       ),
+                                      value: selectedCard,
+                                      onChanged: (PlasticCard? value) {
+                                        setState(() {
+                                          selectedCard = value;
+                                        });
+                                      },
+                                      items: cards!.cards!
+                                          .map((PlasticCard plasticCard) {
+                                        return DropdownMenuItem<PlasticCard>(
+                                          value: plasticCard,
+                                          child: Container(
+                                            padding: const EdgeInsets.only(
+                                                left: 5.0),
+                                            width: 250,
+                                            child: Text(
+                                              '******${plasticCard.cardNo!.substring(12)} ${plasticCard.holderName}',
+                                              style: const TextStyle(
+                                                color: Colors.black,
+                                                fontFamily:
+                                                    'VarelaRoundRegular',
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
                                     ),
-                                  );
-                                }).toList(),
-                              ),
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black),
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(30.0))),
-                              margin: const EdgeInsets.only(bottom: 15.0),
-                              padding: const EdgeInsets.only(left: 10.0),
-                              width: 300,
-                            )
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: const Color(0XFF01ACCA),
+                                        ),
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(30.0))),
+                                    margin: const EdgeInsets.only(bottom: 15.0),
+                                    padding: const EdgeInsets.only(left: 10.0),
+                                    width: 300,
+                                  )
                                 : Container(
-                              child:  TextField(
-                                decoration: InputDecoration(
-                                    label: Text(
-                                      S.of(context).noCards,
-                                      style: const TextStyle(
-                                        color: Colors.black26,
-                                        fontFamily: 'VarelaRoundRegular',
-                                      ),
+                                    child: TextField(
+                                      decoration: InputDecoration(
+                                          label: Text(
+                                            S.of(context).noCards,
+                                            style: const TextStyle(
+                                              color: Colors.black26,
+                                              fontFamily: 'VarelaRoundRegular',
+                                            ),
+                                          ),
+                                          border: InputBorder.none),
+                                      keyboardType: TextInputType.phone,
                                     ),
-                                    border: InputBorder.none),
-                                keyboardType: TextInputType.phone,
-                              ),
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black),
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(30.0))),
-                              margin: const EdgeInsets.only(bottom: 15.0),
-                              padding: const EdgeInsets.only(left: 10.0),
-                              width: 300,
-                            ),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: const Color(0XFF01ACCA),
+                                        ),
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(30.0))),
+                                    margin: const EdgeInsets.only(bottom: 15.0),
+                                    padding: const EdgeInsets.only(left: 10.0),
+                                    width: 300,
+                                  ),
                             visible: !transactionsLoaded,
                           ),
                           Visibility(
@@ -232,7 +241,8 @@ class _TransactionFormState extends State<TransactionForm> with WidgetsBindingOb
                               child: TextButton(
                                 child: TextFormField(
                                   controller: _endDateController,
-                                  decoration:  InputDecoration(hintText: S.of(context).endDateReport,
+                                  decoration: InputDecoration(
+                                    hintText: S.of(context).endDateReport,
                                     hintStyle: const TextStyle(
                                       color: Colors.black26,
                                       fontFamily: 'VarelaRoundRegular',
@@ -244,22 +254,28 @@ class _TransactionFormState extends State<TransactionForm> with WidgetsBindingOb
                                     fontFamily: 'VarelaRoundRegular',
                                   ),
                                 ),
-                                onPressed: () async{
+                                onPressed: () async {
                                   DateTime? picked = await showDatePicker(
                                       context: context,
                                       initialDate: DateTime.now(),
                                       firstDate: DateTime(2020),
-                                      lastDate: DateTime(2030)
-                                  );
-                                  if(picked != null) setState(() => _endDateController.text = picked.month.toString()+'/'+picked.day.toString()+'/'+picked.year.toString());
+                                      lastDate: DateTime(2030));
+                                  if (picked != null) {
+                                    setState(() => _endDateController.text =
+                                        picked.month.toString() +
+                                            '/' +
+                                            picked.day.toString() +
+                                            '/' +
+                                            picked.year.toString());
+                                  }
                                 },
                               ),
                               decoration: BoxDecoration(
                                   border: Border.all(
-                                      color: Colors.black
+                                    color: const Color(0XFF01ACCA),
                                   ),
-                                  borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                              ),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(30.0))),
                               margin: const EdgeInsets.only(bottom: 15.0),
                               padding: const EdgeInsets.only(left: 10.0),
                               width: 300,
@@ -269,221 +285,268 @@ class _TransactionFormState extends State<TransactionForm> with WidgetsBindingOb
                           Visibility(
                             child: Container(
                               child: TextButton(
-                                child:  Text(
+                                child: Text(
                                   S.of(context).send,
                                   style: const TextStyle(
-                                      color: Color(0xFF194D82),
+                                      color: Colors.white,
                                       fontFamily: 'VarelaRoundRegular',
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 20.0
-                                  ),
+                                      fontSize: 20.0),
                                 ),
-                                onPressed: (){
+                                onPressed: () {
                                   _getTransactions();
                                 },
                               ),
                               decoration: const BoxDecoration(
-                                  color: Color(0xFF00FFD5),
-                                  borderRadius: BorderRadius.all(Radius.circular(25.0))
-                              ),
+                                  color: Color(0xFF00CAB2),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(25.0))),
                               width: 300.0,
                             ),
                             visible: showButton,
                           ),
-                          transactionsLoaded ? SizedBox(
-                            child: ListView.builder(
-                                scrollDirection: Axis.vertical,
-                                shrinkWrap: true,
-                                itemCount: virtualTransactionsResponse!.transacciones!.length,
-                                itemBuilder: (context , index){
-                                  VirtualTransaction virtualTransaction = virtualTransactionsResponse!.transacciones![index];
-                                  return Container(
-                                    child: Center(
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            children: [
-                                              const SizedBox(
-                                                child: Text(
-                                                  'ID: ',
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                    fontFamily: 'VarelaRoundRegular',
-                                                  ),
+                          transactionsLoaded
+                              ? SizedBox(
+                                  child: ListView.builder(
+                                      scrollDirection: Axis.vertical,
+                                      shrinkWrap: true,
+                                      itemCount: virtualTransactionsResponse!
+                                          .transacciones!.length,
+                                      itemBuilder: (context, index) {
+                                        VirtualTransaction virtualTransaction =
+                                            virtualTransactionsResponse!
+                                                .transacciones![index];
+                                        return Container(
+                                          child: Center(
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    const SizedBox(
+                                                      child: Text(
+                                                        'ID: ',
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontFamily:
+                                                              'VarelaRoundRegular',
+                                                        ),
+                                                      ),
+                                                      width: 100,
+                                                    ),
+                                                    SizedBox(
+                                                      child: Text(
+                                                        virtualTransaction.id
+                                                            .toString(),
+                                                        style: const TextStyle(
+                                                          fontFamily:
+                                                              'VarelaRoundRegular',
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
                                                 ),
-                                                width: 100,
-                                              ),
-                                              SizedBox(
-                                                child: Text(
-                                                  virtualTransaction.id.toString(),
-                                                  style: const TextStyle(
-                                                    fontFamily: 'VarelaRoundRegular',
-                                                  ),
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      child: Text(
+                                                        S
+                                                            .of(context)
+                                                            .description,
+                                                        style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontFamily:
+                                                              'VarelaRoundRegular',
+                                                        ),
+                                                      ),
+                                                      width: 100,
+                                                    ),
+                                                    SizedBox(
+                                                      child: Text(
+                                                        virtualTransaction
+                                                            .description
+                                                            .toString(),
+                                                        style: const TextStyle(
+                                                          fontFamily:
+                                                              'VarelaRoundRegular',
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
                                                 ),
-                                              ),
-                                            ],
-                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      child: Text(
+                                                        '${S.of(context).reference}: ',
+                                                        style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontFamily:
+                                                              'VarelaRoundRegular',
+                                                        ),
+                                                      ),
+                                                      width: 100,
+                                                    ),
+                                                    SizedBox(
+                                                      child: Text(
+                                                        virtualTransaction
+                                                            .reference
+                                                            .toString(),
+                                                        style: const TextStyle(
+                                                          fontFamily:
+                                                              'VarelaRoundRegular',
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      child: Text(
+                                                        '${S.of(context).amount}: ',
+                                                        style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontFamily:
+                                                              'VarelaRoundRegular',
+                                                        ),
+                                                      ),
+                                                      width: 100,
+                                                    ),
+                                                    SizedBox(
+                                                      child: Text(
+                                                        'USD ${virtualTransaction.amt.toString()}',
+                                                        style: const TextStyle(
+                                                          fontFamily:
+                                                              'VarelaRoundRegular',
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      child: Text(
+                                                        '${S.of(context).inserted}: ',
+                                                        style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontFamily:
+                                                              'VarelaRoundRegular',
+                                                        ),
+                                                      ),
+                                                      width: 100,
+                                                    ),
+                                                    SizedBox(
+                                                      child: Text(
+                                                        virtualTransaction
+                                                            .inserted
+                                                            .toString(),
+                                                        style: const TextStyle(
+                                                          fontFamily:
+                                                              'VarelaRoundRegular',
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      child: Text(
+                                                        '${S.of(context).merchant} ID: ',
+                                                        style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontFamily:
+                                                              'VarelaRoundRegular',
+                                                        ),
+                                                      ),
+                                                      width: 100,
+                                                    ),
+                                                    SizedBox(
+                                                      child: Text(
+                                                        virtualTransaction
+                                                            .merchant
+                                                            .toString(),
+                                                        style: const TextStyle(
+                                                          fontFamily:
+                                                              'VarelaRoundRegular',
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      child: Text(
+                                                        '${S.of(context).authorization}: ',
+                                                        style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontFamily:
+                                                              'VarelaRoundRegular',
+                                                        ),
+                                                      ),
+                                                      width: 100,
+                                                    ),
+                                                    SizedBox(
+                                                      child: Text(
+                                                        virtualTransaction
+                                                            .authno
+                                                            .toString(),
+                                                        style: const TextStyle(
+                                                          fontFamily:
+                                                              'VarelaRoundRegular',
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                ),
+                                              ],
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                            ),
                                           ),
-                                          Row(
-                                            children: [
-                                               SizedBox(
-                                                child: Text(
-                                                  S.of(context).description,
-                                                  style: const TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                    fontFamily: 'VarelaRoundRegular',
-                                                  ),
-                                                ),
-                                                width: 100,
-                                              ),
-                                              SizedBox(
-                                                child: Text(
-                                                  virtualTransaction.description.toString(),
-                                                  style: const TextStyle(
-                                                    fontFamily: 'VarelaRoundRegular',
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                            mainAxisAlignment: MainAxisAlignment.start,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: const Color(0xFF194D82),
+                                                width: 2.0),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(15.0)),
+                                            color: Colors.white,
                                           ),
-                                          Row(
-                                            children: [
-                                               SizedBox(
-                                                child: Text(
-                                                  '${S.of(context).reference}: ',
-                                                  style: const TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                    fontFamily: 'VarelaRoundRegular',
-                                                  ),
-                                                ),
-                                                width: 100,
-                                              ),
-                                              SizedBox(
-                                                child: Text(
-                                                  virtualTransaction.reference.toString(),
-                                                  style: const TextStyle(
-                                                    fontFamily: 'VarelaRoundRegular',
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                          ),
-                                          Row(
-                                            children: [
-                                               SizedBox(
-                                                child: Text(
-                                                  '${S.of(context).amount}: ',
-                                                  style: const TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                    fontFamily: 'VarelaRoundRegular',
-                                                  ),
-                                                ),
-                                                width: 100,
-                                              ),
-                                              SizedBox(
-                                                child: Text(
-                                                  'USD ${virtualTransaction.amt.toString()}',
-                                                  style: const TextStyle(
-                                                    fontFamily: 'VarelaRoundRegular',
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                          ),
-                                          Row(
-                                            children: [
-                                              SizedBox(
-                                                child: Text(
-                                                  '${S.of(context).inserted}: ',
-                                                  style: const TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                    fontFamily: 'VarelaRoundRegular',
-                                                  ),
-                                                ),
-                                                width: 100,
-                                              ),
-                                              SizedBox(
-                                                child: Text(
-                                                  virtualTransaction.inserted.toString(),
-                                                  style: const TextStyle(
-                                                    fontFamily: 'VarelaRoundRegular',
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                          ),
-                                          Row(
-                                            children: [
-                                               SizedBox(
-                                                child: Text(
-                                                  '${S.of(context).merchant} ID: ',
-                                                  style: const TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                    fontFamily: 'VarelaRoundRegular',
-                                                  ),
-                                                ),
-                                                width: 100,
-                                              ),
-                                              SizedBox(
-                                                child: Text(
-                                                  virtualTransaction.merchant.toString(),
-                                                  style: const TextStyle(
-                                                    fontFamily: 'VarelaRoundRegular',
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                          ),
-                                          Row(
-                                            children: [
-                                               SizedBox(
-                                                child: Text(
-                                                  '${S.of(context).authorization}: ',
-                                                  style: const TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                    fontFamily: 'VarelaRoundRegular',
-                                                  ),
-                                                ),
-                                                width: 100,
-                                              ),
-                                              SizedBox(
-                                                child: Text(
-                                                  virtualTransaction.authno.toString(),
-                                                  style: const TextStyle(
-                                                    fontFamily: 'VarelaRoundRegular',
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                          ),
-                                        ],
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      ),
-                                    ),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: const Color(0xFF194D82),
-                                          width: 2.0
-                                      ),
-                                      borderRadius: const BorderRadius.all(Radius.circular(15.0)),
-                                      color: Colors.white,
-                                    ),
-                                    margin: const EdgeInsets.all(5),
-                                    padding: const EdgeInsets.only(left: 10),
-                                    width: 300,
-                                    height: 200,
-                                  );
-                                }
-                            ),
-                            height: screenHeight - 100,
-                            width: screenWidth,
-                          ): const Text('')
+                                          margin: const EdgeInsets.all(5),
+                                          padding:
+                                              const EdgeInsets.only(left: 10),
+                                          width: 300,
+                                          height: 200,
+                                        );
+                                      }),
+                                  height: screenHeight - 100,
+                                  width: screenWidth,
+                                )
+                              : const Text('')
                         ],
                       ),
                       height: screenHeight,
@@ -495,16 +558,14 @@ class _TransactionFormState extends State<TransactionForm> with WidgetsBindingOb
                   Positioned(
                     child: Visibility(
                       child: Container(
-                        child:  Text(
+                        child: Text(
                           S.of(context).processing,
                           style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'VarelaRoundRegular',
                           ),
                         ),
-                        decoration: const BoxDecoration(
-                            color: Colors.grey
-                        ),
+                        decoration: const BoxDecoration(color: Colors.grey),
                         height: 50.0,
                         width: screenWidth,
                         padding: const EdgeInsets.all(10.0),

@@ -38,11 +38,12 @@ class _AddAccountFormState extends State<AddAccountForm> {
                     child: Column(
                       children: [
                         Row(
-                          children:  [
+                          children: [
                             SizedBox(
                               child: Text(
                                 S.of(context).addedSuccessfully,
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               ),
                               width: 150,
                             ),
@@ -53,7 +54,7 @@ class _AddAccountFormState extends State<AddAccountForm> {
                     margin: const EdgeInsets.only(left: 40),
                   ),
                   ElevatedButton(
-                    child:  Text(S.of(context).close),
+                    child: Text(S.of(context).close),
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0XFF0E325F),
@@ -88,7 +89,7 @@ class _AddAccountFormState extends State<AddAccountForm> {
                   margin: const EdgeInsets.only(left: 40.0),
                 ),
                 ElevatedButton(
-                  child:  Text(S.of(context).close),
+                  child: Text(S.of(context).close),
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     primary: const Color(0XFF0E325F),
@@ -165,7 +166,7 @@ class _AddAccountFormState extends State<AddAccountForm> {
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
         title: Text(
           S.of(context).addAccount,
@@ -197,7 +198,7 @@ class _AddAccountFormState extends State<AddAccountForm> {
                           Container(
                             child: SizedBox(
                               child: TextFormField(
-                                decoration:  InputDecoration(
+                                decoration: InputDecoration(
                                     label: Text(
                                       S.of(context).user,
                                       style: const TextStyle(
@@ -216,7 +217,9 @@ class _AddAccountFormState extends State<AddAccountForm> {
                               width: 220,
                             ),
                             decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
+                                border: Border.all(
+                                  color: const Color(0XFF01ACCA),
+                                ),
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
@@ -226,7 +229,7 @@ class _AddAccountFormState extends State<AddAccountForm> {
                           Container(
                             child: SizedBox(
                               child: TextFormField(
-                                decoration:  InputDecoration(
+                                decoration: InputDecoration(
                                     label: Text(
                                       S.of(context).firstName,
                                       style: const TextStyle(
@@ -245,7 +248,9 @@ class _AddAccountFormState extends State<AddAccountForm> {
                               width: 220,
                             ),
                             decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
+                                border: Border.all(
+                                  color: const Color(0XFF01ACCA),
+                                ),
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
@@ -255,7 +260,7 @@ class _AddAccountFormState extends State<AddAccountForm> {
                           Container(
                             child: SizedBox(
                               child: TextFormField(
-                                decoration:  InputDecoration(
+                                decoration: InputDecoration(
                                     label: Text(
                                       S.of(context).lastName,
                                       style: const TextStyle(
@@ -274,7 +279,9 @@ class _AddAccountFormState extends State<AddAccountForm> {
                               width: 220,
                             ),
                             decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
+                                border: Border.all(
+                                  color: const Color(0XFF01ACCA),
+                                ),
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
@@ -284,10 +291,10 @@ class _AddAccountFormState extends State<AddAccountForm> {
                           Visibility(
                             child: Container(
                               child: TextButton(
-                                child:  Text(
-                                 S.of(context).send,
+                                child: Text(
+                                  S.of(context).send,
                                   style: const TextStyle(
-                                      color: Color(0xFF194D82),
+                                      color: Colors.white,
                                       fontFamily: 'VarelaRoundRegular',
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20.0),
@@ -299,7 +306,7 @@ class _AddAccountFormState extends State<AddAccountForm> {
                                 },
                               ),
                               decoration: const BoxDecoration(
-                                  color: Color(0xFF00FFD5),
+                                  color: Color(0xFF00CAB2),
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(25.0))),
                               width: 300.0,
@@ -317,8 +324,8 @@ class _AddAccountFormState extends State<AddAccountForm> {
                   Positioned(
                     child: Visibility(
                       child: Container(
-                        child:  Text(
-                         S.of(context).processing,
+                        child: Text(
+                          S.of(context).processing,
                           style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'VarelaRoundRegular',

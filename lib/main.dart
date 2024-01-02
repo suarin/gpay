@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gpay/screens/startup_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'generated/l10n.dart';
 
-void main() async {
+Future main() async {
+  await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const GPayApp()  );
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  runApp(const GPayApp());
 }
 
 class GPayApp extends StatelessWidget {
@@ -15,7 +22,7 @@ class GPayApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home:  StartupScreen(),
+      home: StartupScreen(),
       title: 'Global Payment Services',
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
@@ -24,8 +31,8 @@ class GPayApp extends StatelessWidget {
         S.delegate
       ],
       supportedLocales: [
-        Locale('en',''),
-        Locale('es',''),
+        Locale('en', ''),
+        Locale('es', ''),
       ],
     );
   }

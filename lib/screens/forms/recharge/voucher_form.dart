@@ -15,8 +15,7 @@ class VoucherForm extends StatefulWidget {
   _VoucherFormState createState() => _VoucherFormState();
 }
 
-class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
-
+class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver {
   //Variables
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> scaffoldStateKey = GlobalKey<ScaffoldState>();
@@ -34,22 +33,23 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
   //Get user data
   _getUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    LoginSuccessResponse  loginSuccessResponse = LoginSuccessResponse(
+    LoginSuccessResponse loginSuccessResponse = LoginSuccessResponse(
         errorCode: 0,
         cHolderID: prefs.getInt('cHolderID'),
         userName: prefs.getString('userName'),
         cardNo: prefs.getString('cardNo'),
         currency: prefs.getString('currency'),
-        balance: prefs.getString('balance')
-    );
+        balance: prefs.getString('balance'));
     setState(() {
       _virtualCardController.text = loginSuccessResponse.cardNo.toString();
     });
   }
+
   //functions for data pickers
-  _loadPaymentTypes() async{
-    String data = await DefaultAssetBundle.of(context).loadString('assets/payment_types.json');
-    final jsonResult =jsonDecode(data);
+  _loadPaymentTypes() async {
+    String data = await DefaultAssetBundle.of(context)
+        .loadString('assets/payment_types.json');
+    final jsonResult = jsonDecode(data);
     setState(() {
       for (int i = 0; i < jsonResult.length; i++) {
         PaymentType paymentType = PaymentType.fromJson(jsonResult[i]);
@@ -59,8 +59,8 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
   }
 
   //functions for dialogs
-  _showSuccessResponse(BuildContext context, CardLoadVoucherResponse cardLoadVoucherResponse){
-
+  _showSuccessResponse(
+      BuildContext context, CardLoadVoucherResponse cardLoadVoucherResponse) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -78,17 +78,17 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                       children: [
                         Row(
                           children: [
-                             SizedBox(
+                            SizedBox(
                               child: Text(
                                 S.of(context).amount,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold
-                                ),
+                                    fontWeight: FontWeight.bold),
                               ),
                               width: 150,
                             ),
                             SizedBox(
-                              child: Text(cardLoadVoucherResponse.amountLoad.toString()),
+                              child: Text(cardLoadVoucherResponse.amountLoad
+                                  .toString()),
                               width: 150,
                             ),
                           ],
@@ -102,17 +102,17 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                       children: [
                         Row(
                           children: [
-                             SizedBox(
+                            SizedBox(
                               child: Text(
                                 S.of(context).authorization,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold
-                                ),
+                                    fontWeight: FontWeight.bold),
                               ),
                               width: 150,
                             ),
                             SizedBox(
-                              child: Text(cardLoadVoucherResponse.authNo.toString()),
+                              child: Text(
+                                  cardLoadVoucherResponse.authNo.toString()),
                               width: 150,
                             ),
                           ],
@@ -122,7 +122,7 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                     margin: const EdgeInsets.only(left: 40),
                   ),
                   ElevatedButton(
-                    child:  Text(S.of(context).close),
+                    child: Text(S.of(context).close),
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0XFF0E325F),
@@ -135,10 +135,9 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
         );
       },
     );
-
   }
 
-  _showErrorResponse(BuildContext context, String errorMessage){
+  _showErrorResponse(BuildContext context, String errorMessage) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -151,11 +150,14 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  child: Text(errorMessage, style: const TextStyle(color: Colors.white),),
+                  child: Text(
+                    errorMessage,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                   margin: const EdgeInsets.only(left: 40.0),
                 ),
                 ElevatedButton(
-                  child:  Text(S.of(context).close),
+                  child: Text(S.of(context).close),
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     primary: const Color(0XFF0E325F),
@@ -170,26 +172,26 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
   }
 
   //Check response
-  _checkResponse(BuildContext context, dynamic json) async{
-    if(json['ErrorCode'] == 0){
-
-      CardLoadVoucherResponse  cardLoadVoucherResponse = CardLoadVoucherResponse.fromJson(json);
+  _checkResponse(BuildContext context, dynamic json) async {
+    if (json['ErrorCode'] == 0) {
+      CardLoadVoucherResponse cardLoadVoucherResponse =
+          CardLoadVoucherResponse.fromJson(json);
       _showSuccessResponse(context, cardLoadVoucherResponse);
-
-    } else{
-      String errorMessage = await SystemErrors.getSystemError(json['ErrorCode']);
+    } else {
+      String errorMessage =
+          await SystemErrors.getSystemError(json['ErrorCode']);
       _showErrorResponse(context, errorMessage);
     }
   }
 
   //Reset form
-  _resetForm(){
+  _resetForm() {
     setState(() {
       isProcessing = false;
-      _voucherController.text='';
-      _mobileController.text='';
-      _merchantController.text ='';
-      _virtualCardController.text ='';
+      _voucherController.text = '';
+      _mobileController.text = '';
+      _merchantController.text = '';
+      _virtualCardController.text = '';
     });
   }
 
@@ -198,12 +200,19 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
     setState(() {
       isProcessing = true;
     });
-    await RechargeServices.getCardLoadVoucher(_merchantController.text,selectedPaymentType!.typeId.toString(),_voucherController.text,_virtualCardController.text,_mobileController.text)
+    await RechargeServices.getCardLoadVoucher(
+            _merchantController.text,
+            selectedPaymentType!.typeId.toString(),
+            _voucherController.text,
+            _virtualCardController.text,
+            _mobileController.text)
         .then((response) => {
-      if(response['ErrorCode'] != null){
-        _checkResponse(context, response),
-      }
-    }).catchError((error){
+              if (response['ErrorCode'] != null)
+                {
+                  _checkResponse(context, response),
+                }
+            })
+        .catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -220,20 +229,20 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
     _resetForm();
   }
 
-  _offScanning() async{
+  _offScanning() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isScanning',false);
+    await prefs.setBool('isScanning', false);
   }
 
   @override
-  void initState(){
+  void initState() {
     _loadPaymentTypes();
     _getUserData();
     _offScanning();
     super.initState();
   }
-  Widget build(BuildContext context) {
 
+  Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
@@ -244,7 +253,7 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
         title: Text(
           S.of(context).voucherLoad,
@@ -258,8 +267,8 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
       ),
       key: scaffoldStateKey,
       body: Builder(
-        builder: (context)=>Form(
-          key:_formKey,
+        builder: (context) => Form(
+          key: _formKey,
           child: SizedBox(
             child: SafeArea(
               child: Stack(
@@ -276,20 +285,19 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                         children: [
                           Container(
                             child: DropdownButton<PaymentType>(
-                              hint:  Text(S.of(context).select,
+                              hint: Text(S.of(context).select,
                                   style: const TextStyle(
                                     color: Colors.black26,
                                     fontFamily: 'VarelaRoundRegular',
-                                  )
-                              ),
+                                  )),
                               value: selectedPaymentType,
-                              onChanged: (PaymentType? value){
+                              onChanged: (PaymentType? value) {
                                 setState(() {
                                   selectedPaymentType = value;
-                                  if(value!.typeId == 'P'){
+                                  if (value!.typeId == 'P') {
                                     showMobileField = true;
                                     _mobileController.text = '';
-                                  }else{
+                                  } else {
                                     showMobileField = false;
                                     _mobileController.text = '0';
                                   }
@@ -313,10 +321,12 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                               }).toList(),
                             ),
                             decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Colors.black
-                                ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
+                              border: Border.all(
+                                color: const Color(0XFF01ACCA),
+                              ),
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(30.0),
+                              ),
                             ),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
@@ -324,7 +334,7 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).merchantPassword,
                                     style: const TextStyle(
@@ -332,11 +342,10 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
+                                  border: InputBorder.none),
                               keyboardType: TextInputType.phone,
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -344,17 +353,17 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).gpsAccount,
                                     style: const TextStyle(
@@ -362,11 +371,10 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
+                                  border: InputBorder.none),
                               keyboardType: TextInputType.phone,
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -374,10 +382,10 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
@@ -392,11 +400,10 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
+                                  border: InputBorder.none),
                               keyboardType: TextInputType.phone,
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -404,10 +411,10 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
@@ -415,7 +422,7 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                           Visibility(
                             child: Container(
                               child: TextFormField(
-                                decoration:  InputDecoration(
+                                decoration: InputDecoration(
                                     label: Text(
                                       S.of(context).phone,
                                       style: const TextStyle(
@@ -423,11 +430,10 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                                         fontFamily: 'VarelaRoundRegular',
                                       ),
                                     ),
-                                    border: InputBorder.none
-                                ),
+                                    border: InputBorder.none),
                                 keyboardType: TextInputType.phone,
-                                validator: (value){
-                                  if(value == null || value.isEmpty){
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
                                     return S.of(context).required;
                                   }
                                 },
@@ -435,10 +441,10 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                               ),
                               decoration: BoxDecoration(
                                   border: Border.all(
-                                      color: Colors.black
+                                    color: const Color(0XFF01ACCA),
                                   ),
-                                  borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                              ),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(30.0))),
                               margin: const EdgeInsets.only(bottom: 15.0),
                               padding: const EdgeInsets.only(left: 10.0),
                               width: 300,
@@ -451,22 +457,21 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                                 child: Text(
                                   S.of(context).send,
                                   style: const TextStyle(
-                                      color: Color(0xFF194D82),
+                                      color: Colors.white,
                                       fontFamily: 'VarelaRoundRegular',
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 20.0
-                                  ),
+                                      fontSize: 20.0),
                                 ),
-                                onPressed: (){
-                                  if(_formKey.currentState!.validate()){
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
                                     _executeTransaction(context);
                                   }
                                 },
                               ),
                               decoration: const BoxDecoration(
-                                  color: Color(0xFF00FFD5),
-                                  borderRadius: BorderRadius.all(Radius.circular(25.0))
-                              ),
+                                  color: Color(0xFF00CAB2),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(25.0))),
                               width: 300.0,
                             ),
                             visible: !isProcessing,
@@ -482,16 +487,14 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
                   Positioned(
                     child: Visibility(
                       child: Container(
-                        child:  Text(
+                        child: Text(
                           S.of(context).processing,
                           style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'VarelaRoundRegular',
                           ),
                         ),
-                        decoration: const BoxDecoration(
-                            color: Colors.grey
-                        ),
+                        decoration: const BoxDecoration(color: Colors.grey),
                         height: 50.0,
                         width: screenWidth,
                         padding: const EdgeInsets.all(10.0),
@@ -509,6 +512,5 @@ class _VoucherFormState extends State<VoucherForm> with WidgetsBindingObserver{
         ),
       ),
     );
-
   }
 }

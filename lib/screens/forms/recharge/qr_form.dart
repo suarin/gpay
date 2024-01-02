@@ -16,8 +16,7 @@ class QrForm extends StatefulWidget {
   _QrFormState createState() => _QrFormState();
 }
 
-class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
-
+class _QrFormState extends State<QrForm> with WidgetsBindingObserver {
   //Variables
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> scaffoldStateKey = GlobalKey<ScaffoldState>();
@@ -36,38 +35,37 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
   //_deactiveAutoLogOut
   _deactiveAutoLogOut(bool value) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isScanning',value);
+    await prefs.setBool('isScanning', value);
   }
 
   //function to Scan QR
   _scanQR(BuildContext context) async {
     await _deactiveAutoLogOut(true);
-    await QRScanner.scanQR().then((result)  =>  {
-      setState(() {
-        _merchantController.text = result.toString();
-      })
-    });
+    await QRScanner.scanQR().then((result) => {
+          setState(() {
+            _merchantController.text = result.toString();
+          })
+        });
   }
 
   //Get user data
   _getUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    LoginSuccessResponse  loginSuccessResponse = LoginSuccessResponse(
+    LoginSuccessResponse loginSuccessResponse = LoginSuccessResponse(
         errorCode: 0,
         cHolderID: prefs.getInt('cHolderID'),
         userName: prefs.getString('userName'),
         cardNo: prefs.getString('cardNo'),
         currency: prefs.getString('currency'),
-        balance: prefs.getString('balance')
-    );
+        balance: prefs.getString('balance'));
     setState(() {
       _virtualCardController.text = loginSuccessResponse.cardNo.toString();
     });
   }
 
   //functions for dialogs
-  _showSuccessResponse(BuildContext context, CardLoadCashResponse cardLoadCashResponse){
-
+  _showSuccessResponse(
+      BuildContext context, CardLoadCashResponse cardLoadCashResponse) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -87,35 +85,30 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
                           const SizedBox(
                             child: Text(
                               'Balance',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             width: 150,
                           ),
                           SizedBox(
                             child: Text(
-                                'USD ${cardLoadCashResponse.balance.toString()}'
-                            ),
+                                'USD ${cardLoadCashResponse.balance.toString()}'),
                             width: 150,
                           ),
                         ],
                       ),
                       Row(
                         children: [
-                           SizedBox(
+                          SizedBox(
                             child: Text(
                               S.of(context).authorization,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             width: 150,
                           ),
                           SizedBox(
                             child: Text(
-                                'USD ${cardLoadCashResponse.authno.toString()}'
-                            ),
+                                'USD ${cardLoadCashResponse.authno.toString()}'),
                             width: 150,
                           ),
                         ],
@@ -125,7 +118,7 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
                   margin: const EdgeInsets.only(left: 40),
                 ),
                 ElevatedButton(
-                  child:  Text(S.of(context).close),
+                  child: Text(S.of(context).close),
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     primary: const Color(0XFF0E325F),
@@ -137,10 +130,9 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
         );
       },
     );
-
   }
 
-  _showErrorResponse(BuildContext context, String errorMessage){
+  _showErrorResponse(BuildContext context, String errorMessage) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -153,11 +145,14 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  child: Text(errorMessage, style: const TextStyle(color: Colors.white),),
+                  child: Text(
+                    errorMessage,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                   margin: const EdgeInsets.only(left: 40.0),
                 ),
                 ElevatedButton(
-                  child:  Text(S.of(context).close),
+                  child: Text(S.of(context).close),
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     primary: const Color(0XFF0E325F),
@@ -172,29 +167,29 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
   }
 
   //Check response
-  _checkResponse(BuildContext context, dynamic json) async{
-    if(json['ErrorCode'] == 0){
-
-      CardLoadCashResponse  cardLoadCashResponse = CardLoadCashResponse.fromJson(json);
+  _checkResponse(BuildContext context, dynamic json) async {
+    if (json['ErrorCode'] == 0) {
+      CardLoadCashResponse cardLoadCashResponse =
+          CardLoadCashResponse.fromJson(json);
       _showSuccessResponse(context, cardLoadCashResponse);
-
-    } else{
-      String errorMessage = await SystemErrors.getSystemError(json['ErrorCode']);
+    } else {
+      String errorMessage =
+          await SystemErrors.getSystemError(json['ErrorCode']);
       _showErrorResponse(context, errorMessage);
     }
   }
 
   //Reset form
-  _resetForm()async{
+  _resetForm() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isScanning',false);
+    await prefs.setBool('isScanning', false);
     setState(() {
       isProcessing = false;
-      _mobileController.text='';
-      _merchantController.text ='';
+      _mobileController.text = '';
+      _merchantController.text = '';
       _passwordController.text = '';
-      _amountController.text ='';
-      _virtualCardController.text ='';
+      _amountController.text = '';
+      _virtualCardController.text = '';
     });
   }
 
@@ -203,12 +198,19 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
     setState(() {
       isProcessing = true;
     });
-    await RechargeServices.getCardLoadCash(_merchantController.text,_passwordController.text,_virtualCardController.text,_mobileController.text, _amountController.text)
+    await RechargeServices.getCardLoadCash(
+            _merchantController.text,
+            _passwordController.text,
+            _virtualCardController.text,
+            _mobileController.text,
+            _amountController.text)
         .then((response) => {
-      if(response['ErrorCode'] != null){
-        _checkResponse(context, response),
-      }
-    }).catchError((error){
+              if (response['ErrorCode'] != null)
+                {
+                  _checkResponse(context, response),
+                }
+            })
+        .catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -225,19 +227,19 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
     _resetForm();
   }
 
-  _offScanning() async{
+  _offScanning() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isScanning',false);
+    await prefs.setBool('isScanning', false);
   }
 
   @override
-  void initState(){
+  void initState() {
     _getUserData();
     _offScanning();
     super.initState();
   }
-  Widget build(BuildContext context) {
 
+  Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
@@ -248,9 +250,9 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
-        title:  Text(
+        title: Text(
           S.of(context).qrLoad,
           style: const TextStyle(
             color: Colors.white,
@@ -283,7 +285,7 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
                               children: [
                                 SizedBox(
                                   child: TextFormField(
-                                    decoration:  InputDecoration(
+                                    decoration: InputDecoration(
                                         label: Text(
                                           S.of(context).merchant,
                                           style: const TextStyle(
@@ -291,11 +293,10 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
                                             fontFamily: 'VarelaRoundRegular',
                                           ),
                                         ),
-                                        border: InputBorder.none
-                                    ),
+                                        border: InputBorder.none),
                                     keyboardType: TextInputType.phone,
-                                    validator: (value){
-                                      if(value == null || value.isEmpty){
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
                                         return S.of(context).required;
                                       }
                                     },
@@ -305,15 +306,16 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
                                 ),
                                 Container(
                                   child: IconButton(
-                                    icon: Image.asset('images/icons/qr_icon.png'),
-                                    onPressed: (){
+                                    icon:
+                                        Image.asset('images/icons/qr_icon.png'),
+                                    onPressed: () {
                                       _scanQR(context);
                                     },
                                   ),
                                   decoration: const BoxDecoration(
-                                    color: Color(0xFF00FFD5),
-                                    borderRadius: BorderRadius.all(Radius.circular(15))
-                                  ),
+                                      color: Color(0xFF00CAB2),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15))),
                                   width: 50,
                                   height: 50,
                                 )
@@ -321,10 +323,10 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
@@ -339,11 +341,10 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
+                                  border: InputBorder.none),
                               keyboardType: TextInputType.phone,
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -351,17 +352,17 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).merchantPassword,
                                     style: const TextStyle(
@@ -369,11 +370,10 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
+                                  border: InputBorder.none),
                               obscureText: true,
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return 'Campo obligatorio';
                                 }
                               },
@@ -381,29 +381,28 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
-                                     S.of(context).phone,
+                                    S.of(context).phone,
                                     style: const TextStyle(
                                       color: Colors.black26,
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
+                                  border: InputBorder.none),
                               keyboardType: TextInputType.phone,
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -411,17 +410,17 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).amount,
                                     style: const TextStyle(
@@ -429,11 +428,10 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
+                                  border: InputBorder.none),
                               keyboardType: TextInputType.phone,
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -441,10 +439,10 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
@@ -455,22 +453,21 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
                                 child: Text(
                                   S.of(context).send,
                                   style: const TextStyle(
-                                      color: Color(0xFF194D82),
+                                      color: Colors.white,
                                       fontFamily: 'VarelaRoundRegular',
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 20.0
-                                  ),
+                                      fontSize: 20.0),
                                 ),
-                                onPressed: (){
-                                  if(_formKey.currentState!.validate()){
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
                                     _executeTransaction(context);
                                   }
                                 },
                               ),
                               decoration: const BoxDecoration(
-                                  color: Color(0xFF00FFD5),
-                                  borderRadius: BorderRadius.all(Radius.circular(25.0))
-                              ),
+                                  color: Color(0xFF00CAB2),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(25.0))),
                               width: 300.0,
                             ),
                             visible: !isProcessing,
@@ -486,16 +483,14 @@ class _QrFormState extends State<QrForm> with WidgetsBindingObserver{
                   Positioned(
                     child: Visibility(
                       child: Container(
-                        child:  Text(
+                        child: Text(
                           S.of(context).processing,
                           style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'VarelaRoundRegular',
                           ),
                         ),
-                        decoration: const BoxDecoration(
-                            color: Colors.grey
-                        ),
+                        decoration: const BoxDecoration(color: Colors.grey),
                         height: 50.0,
                         width: screenWidth,
                         padding: const EdgeInsets.all(10.0),

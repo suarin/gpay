@@ -4,27 +4,26 @@ class TransferBetweenCardForm extends StatefulWidget {
   const TransferBetweenCardForm({Key? key}) : super(key: key);
 
   @override
-  _TransferBetweenCardFormState createState() => _TransferBetweenCardFormState();
+  _TransferBetweenCardFormState createState() =>
+      _TransferBetweenCardFormState();
 }
 
 class _TransferBetweenCardFormState extends State<TransferBetweenCardForm> {
-
   var screenSize, screenWidth, screenHeight;
 
   @override
   Widget build(BuildContext context) {
-
     screenSize = MediaQuery.of(context).size;
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
         title: const Text(
           'Crear Cuenta',
@@ -60,15 +59,12 @@ class _TransferBetweenCardFormState extends State<TransferBetweenCardForm> {
                                   fontFamily: 'VarelaRoundRegular',
                                 ),
                               ),
-                              border: InputBorder.none
-                          ),
+                              border: InputBorder.none),
                         ),
                         decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Colors.black
-                            ),
-                            borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                        ),
+                            border: Border.all(color: Colors.black),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(30.0))),
                         margin: const EdgeInsets.only(bottom: 15.0),
                         padding: const EdgeInsets.only(left: 10.0),
                         width: 300,
@@ -81,15 +77,14 @@ class _TransferBetweenCardFormState extends State<TransferBetweenCardForm> {
                                 color: Color(0xFF194D82),
                                 fontFamily: 'VarelaRoundRegular',
                                 fontWeight: FontWeight.bold,
-                                fontSize: 20.0
-                            ),
+                                fontSize: 20.0),
                           ),
-                          onPressed: (){},
+                          onPressed: () {},
                         ),
                         decoration: const BoxDecoration(
                             color: Color(0xFF00FFD5),
-                            borderRadius: BorderRadius.all(Radius.circular(25.0))
-                        ),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(25.0))),
                         width: 300.0,
                       ),
                     ],

@@ -15,14 +15,14 @@ class DepositForm extends StatefulWidget {
   _DepositFormState createState() => _DepositFormState();
 }
 
-class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
-
+class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver {
   //Variables
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> scaffoldStateKey = GlobalKey<ScaffoldState>();
   final _passwordController = TextEditingController();
   final _amountController = TextEditingController();
   final _referenceController = TextEditingController();
+  final _senderController = TextEditingController();
   bool isProcessing = false;
   bool bankLoaded = false;
   AuthorizationResponse? authorizationResponse;
@@ -31,9 +31,10 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
   var screenSize, screenWidth, screenHeight;
 
   //functions for data pickers
-  _loadBanks() async{
-    String data = await DefaultAssetBundle.of(context).loadString('assets/banks.json');
-    final jsonResult =jsonDecode(data);
+  _loadBanks() async {
+    String data =
+        await DefaultAssetBundle.of(context).loadString('assets/banks.json');
+    final jsonResult = jsonDecode(data);
     setState(() {
       for (int i = 0; i < jsonResult.length; i++) {
         Bank bank = Bank.fromJson(jsonResult[i]);
@@ -44,7 +45,8 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
   }
 
   //functions for dialogs
-  _showSuccessResponse(BuildContext context, AuthorizationResponse authorizationResponse){
+  _showSuccessResponse(
+      BuildContext context, AuthorizationResponse authorizationResponse) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -66,13 +68,13 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
                               child: Text(
                                 S.of(context).authorization,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold
-                                ),
+                                    fontWeight: FontWeight.bold),
                               ),
                               width: 150,
                             ),
                             SizedBox(
-                              child: Text(authorizationResponse.authNo.toString()),
+                              child:
+                                  Text(authorizationResponse.authNo.toString()),
                               width: 150,
                             ),
                           ],
@@ -82,7 +84,7 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
                     margin: const EdgeInsets.only(left: 40),
                   ),
                   ElevatedButton(
-                    child:  Text(S.of(context).close),
+                    child: Text(S.of(context).close),
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0XFF0E325F),
@@ -95,10 +97,9 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
         );
       },
     );
-
   }
 
-  _showErrorResponse(BuildContext context, String errorMessage){
+  _showErrorResponse(BuildContext context, String errorMessage) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -111,7 +112,10 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  child: Text(errorMessage, style: const TextStyle(color: Colors.white),),
+                  child: Text(
+                    errorMessage,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                   margin: const EdgeInsets.only(left: 40.0),
                 ),
                 ElevatedButton(
@@ -130,24 +134,24 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
   }
 
   //Check response
-  _checkResponse(BuildContext context, dynamic json) async{
-    if(json['ErrorCode'] == 0){
-
-      AuthorizationResponse  authorizationResponse = AuthorizationResponse.fromJson(json);
+  _checkResponse(BuildContext context, dynamic json) async {
+    if (json['ErrorCode'] == 0) {
+      AuthorizationResponse authorizationResponse =
+          AuthorizationResponse.fromJson(json);
       _showSuccessResponse(context, authorizationResponse);
-
-    } else{
-      String errorMessage = await SystemErrors.getSystemError(json['ErrorCode']);
+    } else {
+      String errorMessage =
+          await SystemErrors.getSystemError(json['ErrorCode']);
       _showErrorResponse(context, errorMessage);
     }
   }
 
   //Reset form
-  _resetForm(){
+  _resetForm() {
     setState(() {
       isProcessing = false;
-      _referenceController.text ='';
-      _amountController.text ='';
+      _referenceController.text = '';
+      _amountController.text = '';
       _passwordController.text = '';
     });
   }
@@ -157,12 +161,19 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
     setState(() {
       isProcessing = true;
     });
-    await RechargeServices.getLoadBank(_passwordController.text,selectedBank!.bankId.toString(),_amountController.text,_referenceController.text)
+    await RechargeServices.getLoadBank(
+            _passwordController.text,
+            selectedBank!.bankId.toString(),
+            _amountController.text,
+            _referenceController.text,
+            _senderController.text)
         .then((response) => {
-      if(response['ErrorCode'] != null){
-        _checkResponse(context, response),
-      }
-    }).catchError((error){
+              if (response['ErrorCode'] != null)
+                {
+                  _checkResponse(context, response),
+                }
+            })
+        .catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -179,19 +190,19 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
     _resetForm();
   }
 
-  _offScanning() async{
+  _offScanning() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isScanning',false);
+    await prefs.setBool('isScanning', false);
   }
 
   @override
-  void initState(){
+  void initState() {
     _loadBanks();
     _offScanning();
     super.initState();
   }
-  Widget build(BuildContext context) {
 
+  Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
@@ -202,9 +213,9 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
-        title:  Text(
+        title: Text(
           '${S.of(context).deposit} / Zelle',
           style: const TextStyle(
             color: Colors.white,
@@ -232,60 +243,49 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
                     child: SizedBox(
                       child: ListView(
                         children: [
-                          Container(
-                            child:  Text('${S.of(context).zelleAccount}: pagos@bgipay.me',
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'VarelaRoundRegular',
-                              ),
-                            ),
-                            decoration: const BoxDecoration(
-                              color: Color(0XFFEFEFEF),
-                              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            ),
-                            height: 60.0,
-                            margin: const EdgeInsets.only(bottom: 5.0),
-                            padding: const EdgeInsets.only(left: 10.0, top: 5),
-                          ),
-                          bankLoaded ? Container(
-                            child: DropdownButton<Bank>(
-                              hint:  Text(S.of(context).selectBankAccount),
-                              value: selectedBank,
-                              onChanged: (Bank? value){
-                                setState(() {
-                                  selectedBank = value;
-                                });
-                              },
-                              items: banks.map((Bank bank) {
-                                return DropdownMenuItem<Bank>(
-                                  value: bank,
-                                  child: Container(
-                                    padding: const EdgeInsets.only(left: 5.0),
-                                    width: 250,
-                                    child: Text(
-                                      bank.bankName!,
-                                      style: const TextStyle(
-                                        fontSize: 20.0,
-                                        fontFamily: "NanumGothic Bold",
-                                      ),
-                                    ),
+                          bankLoaded
+                              ? Container(
+                                  child: DropdownButton<Bank>(
+                                    hint: Text(S.of(context).selectBankAccount),
+                                    value: selectedBank,
+                                    onChanged: (Bank? value) {
+                                      setState(() {
+                                        selectedBank = value;
+                                      });
+                                    },
+                                    items: banks.map((Bank bank) {
+                                      return DropdownMenuItem<Bank>(
+                                        value: bank,
+                                        child: Container(
+                                          padding:
+                                              const EdgeInsets.only(left: 5.0),
+                                          width: 250,
+                                          child: Text(
+                                            bank.bankName!,
+                                            style: const TextStyle(
+                                              fontSize: 20.0,
+                                              fontFamily: "NanumGothic Bold",
+                                              color: Color(0XFF01ACCA),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
                                   ),
-                                );
-                              }).toList(),
-                            ),
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Colors.black
-                                ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
-                            margin: const EdgeInsets.only(bottom: 15.0),
-                            padding: const EdgeInsets.only(left: 10.0),
-                            width: 300,
-                          ):  Text(S.of(context).noBankAccounts),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color(0XFF01ACCA),
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(30.0))),
+                                  margin: const EdgeInsets.only(bottom: 15.0),
+                                  padding: const EdgeInsets.only(left: 10.0),
+                                  width: 300,
+                                )
+                              : Text(S.of(context).noBankAccounts),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     '${S.of(context).reference} Zelle *',
                                     style: const TextStyle(
@@ -293,10 +293,9 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                                  border: InputBorder.none),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -304,17 +303,45 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
+                                  label: Text(
+                                    S.of(context).sender,
+                                    style: const TextStyle(
+                                      color: Colors.black26,
+                                      fontFamily: 'VarelaRoundRegular',
+                                    ),
+                                  ),
+                                  border: InputBorder.none),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return S.of(context).required;
+                                }
+                              },
+                              controller: _senderController,
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: const Color(0XFF01ACCA),
+                                ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
+                            margin: const EdgeInsets.only(bottom: 15.0),
+                            padding: const EdgeInsets.only(left: 10.0),
+                            width: 300,
+                          ),
+                          Container(
+                            child: TextFormField(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).amount,
                                     style: const TextStyle(
@@ -322,11 +349,10 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
+                                  border: InputBorder.none),
                               keyboardType: TextInputType.phone,
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -334,17 +360,17 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).webPin,
                                     style: const TextStyle(
@@ -352,11 +378,10 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
+                                  border: InputBorder.none),
                               keyboardType: TextInputType.phone,
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -365,10 +390,10 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
@@ -376,25 +401,24 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
                           Visibility(
                             child: Container(
                               child: TextButton(
-                                child:  Text(
+                                child: Text(
                                   S.of(context).send,
                                   style: const TextStyle(
-                                      color: Color(0xFF194D82),
+                                      color: Colors.white,
                                       fontFamily: 'VarelaRoundRegular',
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 20.0
-                                  ),
+                                      fontSize: 20.0),
                                 ),
-                                onPressed: (){
-                                  if(_formKey.currentState!.validate()){
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
                                     _executeTransaction(context);
                                   }
                                 },
                               ),
                               decoration: const BoxDecoration(
-                                  color: Color(0xFF00FFD5),
-                                  borderRadius: BorderRadius.all(Radius.circular(25.0))
-                              ),
+                                  color: Color(0xFF00CAB2),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(25.0))),
                               width: 300.0,
                             ),
                             visible: !isProcessing,
@@ -410,16 +434,14 @@ class _DepositFormState extends State<DepositForm> with WidgetsBindingObserver{
                   Positioned(
                     child: Visibility(
                       child: Container(
-                        child:  Text(
+                        child: Text(
                           S.of(context).processing,
                           style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'VarelaRoundRegular',
                           ),
                         ),
-                        decoration: const BoxDecoration(
-                            color: Colors.grey
-                        ),
+                        decoration: const BoxDecoration(color: Colors.grey),
                         height: 50.0,
                         width: screenWidth,
                         padding: const EdgeInsets.all(10.0),

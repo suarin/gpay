@@ -5,8 +5,8 @@ import 'package:gpay/screens/recharge_screen.dart';
 import 'package:gpay/screens/shop_screen.dart';
 import 'package:gpay/screens/transfer_screen.dart';
 
-class NavDrawer extends StatelessWidget {
-  const NavDrawer({Key? key}) : super(key: key);
+class InternTransferForm extends StatelessWidget {
+  const InternTransferForm({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

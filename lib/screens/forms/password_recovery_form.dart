@@ -11,8 +11,8 @@ class PasswordRecoveryForm extends StatefulWidget {
   _PasswordRecoveryFormState createState() => _PasswordRecoveryFormState();
 }
 
-class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with WidgetsBindingObserver{
-
+class _PasswordRecoveryFormState extends State<PasswordRecoveryForm>
+    with WidgetsBindingObserver {
   //Variables
   var screenSize, screenWidth, screenHeight;
   final _formKey = GlobalKey<FormState>();
@@ -22,8 +22,7 @@ class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with Widget
   bool isProcessing = false;
 
   //functions for dialogs
-  _showSuccessResponse(BuildContext context){
-
+  _showSuccessResponse(BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -40,13 +39,12 @@ class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with Widget
                     child: Column(
                       children: [
                         Row(
-                          children:  [
+                          children: [
                             SizedBox(
                               child: Text(
                                 S.of(context).result,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold
-                                ),
+                                    fontWeight: FontWeight.bold),
                               ),
                               width: 150,
                             ),
@@ -61,7 +59,7 @@ class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with Widget
                     margin: const EdgeInsets.only(left: 40),
                   ),
                   ElevatedButton(
-                    child:  Text(S.of(context).close),
+                    child: Text(S.of(context).close),
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0XFF0E325F),
@@ -74,10 +72,9 @@ class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with Widget
         );
       },
     );
-
   }
 
-  _showErrorResponse(BuildContext context, String errorMessage){
+  _showErrorResponse(BuildContext context, String errorMessage) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -90,11 +87,14 @@ class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with Widget
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  child: Text(errorMessage, style: const TextStyle(color: Colors.white),),
+                  child: Text(
+                    errorMessage,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                   margin: const EdgeInsets.only(left: 40.0),
                 ),
                 ElevatedButton(
-                  child:  Text(S.of(context).close),
+                  child: Text(S.of(context).close),
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     primary: const Color(0XFF0E325F),
@@ -109,23 +109,22 @@ class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with Widget
   }
 
   //Check response
-  _checkResponse(BuildContext context, dynamic json) async{
-    if(json['ErrorCode'] == 0){
-
+  _checkResponse(BuildContext context, dynamic json) async {
+    if (json['ErrorCode'] == 0) {
       _showSuccessResponse(context);
-
-    } else{
-      String errorMessage = await SystemErrors.getSystemError(json['ErrorCode']);
+    } else {
+      String errorMessage =
+          await SystemErrors.getSystemError(json['ErrorCode']);
       _showErrorResponse(context, errorMessage);
     }
   }
 
   //Reset form
-  _resetForm(){
+  _resetForm() {
     setState(() {
       isProcessing = false;
       _pin2Controller.text = '';
-      _pin1Controller.text ='';
+      _pin1Controller.text = '';
     });
   }
 
@@ -134,12 +133,15 @@ class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with Widget
     setState(() {
       isProcessing = true;
     });
-    await GeneralServices.getPasswordChange(_pin1Controller.text, _pin2Controller.text)
+    await GeneralServices.getPasswordChange(
+            _pin1Controller.text, _pin2Controller.text)
         .then((response) => {
-      if(response['ErrorCode'] != null){
-        _checkResponse(context, response),
-      }
-    }).catchError((error){
+              if (response['ErrorCode'] != null)
+                {
+                  _checkResponse(context, response),
+                }
+            })
+        .catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -156,18 +158,18 @@ class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with Widget
     _resetForm();
   }
 
-  _offScanning() async{
+  _offScanning() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isScanning',false);
+    await prefs.setBool('isScanning', false);
   }
 
   @override
-  void initState(){
+  void initState() {
     _offScanning();
     super.initState();
   }
-  Widget build(BuildContext context) {
 
+  Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
@@ -178,10 +180,10 @@ class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with Widget
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
-        title:  Text(
-          S.of(context).passwordRecovery,
+        title: Text(
+          S.of(context).changepassword,
           style: const TextStyle(
             color: Colors.white,
             fontFamily: 'VarealRoundRegular',
@@ -192,7 +194,7 @@ class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with Widget
       ),
       key: scaffoldStateKey,
       body: Builder(
-        builder: (context)=>Form(
+        builder: (context) => Form(
           key: _formKey,
           child: SizedBox(
             child: SafeArea(
@@ -210,37 +212,34 @@ class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with Widget
                         children: [
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
-                                   S.of(context).password,
+                                    S.of(context).password,
                                     style: const TextStyle(
                                       color: Colors.black26,
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
+                                  border: InputBorder.none),
                               obscureText: true,
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
                               controller: _pin1Controller,
                             ),
                             decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Colors.black
-                                ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                border: Border.all(color: Colors.black),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).repeatPassword,
                                     style: const TextStyle(
@@ -248,25 +247,23 @@ class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with Widget
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
+                                  border: InputBorder.none),
                               obscureText: true,
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
-                                if(_pin1Controller.text != _pin2Controller.text){
+                                if (_pin1Controller.text !=
+                                    _pin2Controller.text) {
                                   return S.of(context).passwordDoesNotMatch;
                                 }
                               },
                               controller: _pin2Controller,
                             ),
                             decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Colors.black
-                                ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                border: Border.all(color: Colors.black),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
@@ -274,25 +271,24 @@ class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with Widget
                           Visibility(
                             child: Container(
                               child: TextButton(
-                                child:  Text(
+                                child: Text(
                                   S.of(context).change,
                                   style: const TextStyle(
                                       color: Color(0xFF194D82),
                                       fontFamily: 'VarelaRoundRegular',
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 20.0
-                                  ),
+                                      fontSize: 20.0),
                                 ),
-                                onPressed: (){
-                                  if(_formKey.currentState!.validate()){
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
                                     _executeTransaction(context);
                                   }
                                 },
                               ),
                               decoration: const BoxDecoration(
                                   color: Color(0xFF00FFD5),
-                                  borderRadius: BorderRadius.all(Radius.circular(25.0))
-                              ),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(25.0))),
                               width: 300.0,
                             ),
                             visible: !isProcessing,
@@ -308,16 +304,14 @@ class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with Widget
                   Positioned(
                     child: Visibility(
                       child: Container(
-                        child:  Text(
-                         S.of(context).processing,
+                        child: Text(
+                          S.of(context).processing,
                           style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'VarelaRoundRegular',
                           ),
                         ),
-                        decoration: const BoxDecoration(
-                            color: Colors.grey
-                        ),
+                        decoration: const BoxDecoration(color: Colors.grey),
                         height: 50.0,
                         width: screenWidth,
                         padding: const EdgeInsets.all(10.0),
@@ -335,6 +329,5 @@ class _PasswordRecoveryFormState extends State<PasswordRecoveryForm> with Widget
         ),
       ),
     );
-    
   }
 }

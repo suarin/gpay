@@ -1,68 +1,49 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gpay/generated/l10n.dart';
-import 'package:gpay/models/country.dart';
-import 'package:gpay/models/document_type.dart';
-import 'package:gpay/models/general/registration_success_response.dart';
-import 'package:gpay/screens/forms/registration_results_screen.dart';
-import 'package:gpay/screens/identity_check_screen.dart';
+import 'package:gpay/models/transfer/dr_bank.dart';
+import 'package:gpay/models/transfer/dr_bank_list.dart';
+import 'package:gpay/models/general/drbeneficiary_success_response.dart';
 import 'package:gpay/services/general_services.dart';
+import 'package:gpay/services/transfer_services.dart';
 import 'package:gpay/services/system_errors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class RegistrationForm extends StatefulWidget {
-  const RegistrationForm({Key? key}) : super(key: key);
+class DrBeneficiaryForm extends StatefulWidget {
+  const DrBeneficiaryForm({Key? key}) : super(key: key);
 
   @override
-  _RegistrationFormState createState() => _RegistrationFormState();
+  _DrBeneficiaryFormState createState() => _DrBeneficiaryFormState();
 }
 
-class _RegistrationFormState extends State<RegistrationForm> {
+class _DrBeneficiaryFormState extends State<DrBeneficiaryForm> {
   //Variables
   var screenSize, screenWidth, screenHeight;
   final _formKey = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> scaffoldState = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> scaffoldStateKey = GlobalKey<ScaffoldState>();
   final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
   final _mobileNumberController = TextEditingController();
   final _emailController = TextEditingController();
   final _identificationNumberController = TextEditingController();
-  final _recomendationNumberController = TextEditingController();
-  List<Country> countries = <Country>[];
-  List<DocumentType> documentTypes = <DocumentType>[];
-  Country? selectedCountry;
-  DocumentType? selectedDocumentType;
   bool isProcessing = false;
-  RegistrationSuccessResponse registrationSuccessResponse =
-      RegistrationSuccessResponse();
+  bool banksLoaded = false;
+  DrbenefSuccessResponse drbenefSuccessResponse = DrbenefSuccessResponse();
+  DrBank? drBankSelected;
+  DrBankList? drBanks;
 
-  //Functions for data pickers
-  _loadCountries() async {
-    String data = await DefaultAssetBundle.of(context)
-        .loadString("assets/countries.json");
-    final jsonResult = jsonDecode(data);
-    setState(() {
-      for (int i = 0; i < jsonResult.length; i++) {
-        Country country = Country.fromJson(jsonResult[i]);
-        countries.add(country);
-      }
-    });
-  }
 
-  _loadDocumentTypes() async {
-    String data = await DefaultAssetBundle.of(context)
-        .loadString("assets/document_types.json");
-    final jsonResult = jsonDecode(data);
-    setState(() {
-      for (int i = 0; i < jsonResult.length; i++) {
-        DocumentType documentType = DocumentType.fromJson(jsonResult[i]);
-        documentTypes.add(documentType);
-      }
+  //function to obtain dr bank for picker
+  _getDrBanks() async {
+    await TransferServices.getDrBanks().then((list) => {
+      setState(() {
+        drBanks = DrBankList.fromJson(list);
+        banksLoaded = true;
+      })
     });
   }
 
   //functions for dialogs
-  _showSuccessResponse(BuildContext context,
-      RegistrationSuccessResponse registrationSuccessResponse) {
+  _showSuccessResponse(
+      BuildContext context, DrbenefSuccessResponse drbenefSuccessResponse) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -82,83 +63,14 @@ class _RegistrationFormState extends State<RegistrationForm> {
                           children: [
                             SizedBox(
                               child: Text(
-                                S.of(context).cardHolderId,
+                                S.of(context).benefId,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold),
                               ),
                               width: 150,
                             ),
                             SizedBox(
-                              child: Text(registrationSuccessResponse.cHolderId
-                                  .toString()),
-                              width: 150,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            SizedBox(
-                              child: Text(
-                                S.of(context).cardNumber,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              width: 150,
-                            ),
-                            SizedBox(
-                              child: Text(registrationSuccessResponse.cardNo
-                                  .toString()),
-                              width: 150,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            SizedBox(
-                              child: Text(
-                                S.of(context).userId,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              width: 150,
-                            ),
-                            SizedBox(
-                              child: Text(registrationSuccessResponse.userId
-                                  .toString()),
-                              width: 150,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            SizedBox(
-                              child: Text(
-                                S.of(context).password,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              width: 150,
-                            ),
-                            SizedBox(
-                              child: Text(registrationSuccessResponse.password
-                                  .toString()),
-                              width: 150,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            SizedBox(
-                              child: Text(
-                                S.of(context).authorization,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              width: 150,
-                            ),
-                            SizedBox(
-                              child: Text(registrationSuccessResponse.authno
-                                  .toString()),
+                              child: Text(drbenefSuccessResponse.benefId.toString()),
                               width: 150,
                             ),
                           ],
@@ -220,31 +132,24 @@ class _RegistrationFormState extends State<RegistrationForm> {
   //Check response
   _checkResponse(BuildContext context, dynamic json) async {
     if (json['ErrorCode'] == 0) {
-      RegistrationSuccessResponse registrationSuccessResponse =
-          RegistrationSuccessResponse.fromJson(json);
-      _showSuccessResponse(context, registrationSuccessResponse);
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => RegistrationResultsScreen(
-                  registrationSuccessResponse: registrationSuccessResponse)));
+      DrbenefSuccessResponse drbenefSuccessResponse = DrbenefSuccessResponse.fromJson(json);
+      _showSuccessResponse(context, drbenefSuccessResponse);
     } else {
       String errorMessage =
-          await SystemErrors.getSystemError(json['ErrorCode']);
+      await SystemErrors.getSystemError(json['ErrorCode']);
       _showErrorResponse(context, errorMessage);
     }
   }
+
 
   //reset form
   _resetForm() {
     setState(() {
       isProcessing = false;
-      _emailController.text = '';
-      _identificationNumberController.text = '';
-      _mobileNumberController.text = '';
-      _lastNameController.text = '';
       _firstNameController.text = '';
-      _recomendationNumberController.text = '';
+      _identificationNumberController.text = '';
+      _emailController.text = '';
+      _mobileNumberController.text = '';
     });
   }
 
@@ -253,27 +158,40 @@ class _RegistrationFormState extends State<RegistrationForm> {
     setState(() {
       isProcessing = true;
     });
-    await GeneralServices.getCustomerRegistration(
-            _recomendationNumberController.text,
-            _firstNameController.text,
-            _lastNameController.text,
-            _mobileNumberController.text,
-            _emailController.text,
-            selectedCountry!.alpha3.toString(),
-            selectedDocumentType!.ID.toString(),
-            _identificationNumberController.text)
-        .then((response) => {
-              if (response['ErrorCode'] != null)
-                {
-                  _checkResponse(context, response),
-                }
-            })
-        .catchError((error) {
+    if (drBankSelected != null) {
+      // Existing code when drBankSelected is not null
+      await GeneralServices.getDrBeneficiary(
+          _firstNameController.text,
+          _identificationNumberController.text,
+          _emailController.text,
+          drBankSelected!.bankID.toString(),
+          _mobileNumberController.text)
+          .then((response) {
+        if (response['ErrorCode'] != null) {
+          _checkResponse(context, response);
+        }
+      })
+          .catchError((error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              error.toString(),
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        _resetForm();
+      });
+    } else {
+      // Handle the case where drBankSelected is null
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            error.toString(),
-            style: const TextStyle(
+            'Please select a bank', // Your message here
+            style: TextStyle(
               color: Colors.white,
             ),
           ),
@@ -281,22 +199,25 @@ class _RegistrationFormState extends State<RegistrationForm> {
         ),
       );
       _resetForm();
-    });
-    _resetForm();
+    }
+  }
+
+  _offScanning() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isScanning', false);
   }
 
   @override
   void initState() {
-    _loadCountries();
-    _loadDocumentTypes();
+    _getDrBanks();
+    _offScanning();
     super.initState();
   }
 
   Widget build(BuildContext context) {
-    screenSize = MediaQuery.of(context).size;
-    screenHeight = MediaQuery.of(context).size.height;
-    screenWidth = MediaQuery.of(context).size.width;
-
+    var screenSize = MediaQuery.of(context).size;
+    var screenHeight = MediaQuery.of(context).size.height;
+    var screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -306,7 +227,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
           height: 150.0,
         ),
         title: Text(
-          S.of(context).signUp,
+          S.of(context).drBeneficiary,
           style: const TextStyle(
             color: Colors.white,
             fontFamily: 'VarealRoundRegular',
@@ -315,6 +236,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
           ),
         ),
       ),
+      key: scaffoldStateKey,
       body: Builder(
         builder: (context) => Form(
           key: _formKey,
@@ -331,32 +253,6 @@ class _RegistrationFormState extends State<RegistrationForm> {
                   Container(
                     child: ListView(
                       children: [
-                        Container(
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                                label: Text(
-                                  S.of(context).promotionalCode,
-                                  style: const TextStyle(
-                                    color: Colors.black26,
-                                    fontFamily: 'VarelaRoundRegular',
-                                  ),
-                                ),
-                                border: InputBorder.none),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return S.of(context).required;
-                              }
-                            },
-                            controller: _recomendationNumberController,
-                          ),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              borderRadius: const BorderRadius.all(
-                                  Radius.circular(30.0))),
-                          margin: const EdgeInsets.only(bottom: 15.0),
-                          padding: const EdgeInsets.only(left: 10.0),
-                          width: 300,
-                        ),
                         Container(
                           child: TextFormField(
                             decoration: InputDecoration(
@@ -387,7 +283,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                           child: TextFormField(
                             decoration: InputDecoration(
                                 label: Text(
-                                  S.of(context).surnames,
+                                  S.of(context).identificationNumber,
                                   style: const TextStyle(
                                     color: Colors.black26,
                                     fontFamily: 'VarelaRoundRegular',
@@ -399,34 +295,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                                 return S.of(context).required;
                               }
                             },
-                            controller: _lastNameController,
-                          ),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              borderRadius: const BorderRadius.all(
-                                  Radius.circular(30.0))),
-                          margin: const EdgeInsets.only(bottom: 15.0),
-                          padding: const EdgeInsets.only(left: 10.0),
-                          width: 300,
-                        ),
-                        Container(
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                                label: Text(
-                                  S.of(context).phone,
-                                  style: const TextStyle(
-                                    color: Colors.black26,
-                                    fontFamily: 'VarelaRoundRegular',
-                                  ),
-                                ),
-                                border: InputBorder.none),
-                            keyboardType: TextInputType.phone,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return S.of(context).required;
-                              }
-                            },
-                            controller: _mobileNumberController,
+                            controller: _identificationNumberController,
                           ),
                           decoration: BoxDecoration(
                               border: Border.all(color: Colors.black),
@@ -464,57 +333,22 @@ class _RegistrationFormState extends State<RegistrationForm> {
                           width: 300,
                         ),
                         Container(
-                          child: DropdownButton<Country>(
-                            hint: Text(S.of(context).selectCountry),
-                            value: selectedCountry,
-                            onChanged: (Country? value) {
+                          child: DropdownButton<DrBank>(
+                            hint: Text(S.of(context).selectDrBank),
+                            value: drBankSelected,
+                            onChanged: (DrBank? value) {
                               setState(() {
-                                selectedCountry = value;
+                                drBankSelected = value;
                               });
                             },
-                            items: countries.map((Country country) {
-                              return DropdownMenuItem<Country>(
-                                value: country,
+                            items: drBanks!.DrBanks!.map((DrBank drBank) {
+                              return DropdownMenuItem<DrBank>(
+                                value: drBank,
                                 child: Container(
                                   padding: const EdgeInsets.only(left: 5.0),
                                   width: 250,
                                   child: Text(
-                                    country.name,
-                                    style: const TextStyle(
-                                      fontSize: 20.0,
-                                      fontFamily: "NanumGothic Bold",
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                          decoration: const BoxDecoration(
-                              color: Color(0xFF00FFD5),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(25.0))),
-                          padding: const EdgeInsets.only(left: 10.0),
-                          margin: const EdgeInsets.only(bottom: 10.0),
-                          width: 250.0,
-                        ),
-                        Container(
-                          child: DropdownButton<DocumentType>(
-                            hint: Text(S.of(context).documentType),
-                            value: selectedDocumentType,
-                            onChanged: (DocumentType? value) {
-                              setState(() {
-                                selectedDocumentType = value;
-                              });
-                            },
-                            items:
-                                documentTypes.map((DocumentType documentType) {
-                              return DropdownMenuItem<DocumentType>(
-                                value: documentType,
-                                child: Container(
-                                  padding: const EdgeInsets.only(left: 5.0),
-                                  width: 250,
-                                  child: Text(
-                                    '${documentType.ID} ${documentType.description}',
+                                    drBank.bankName.toString(),
                                     style: const TextStyle(
                                       fontSize: 20.0,
                                       fontFamily: "NanumGothic Bold",
@@ -536,19 +370,20 @@ class _RegistrationFormState extends State<RegistrationForm> {
                           child: TextFormField(
                             decoration: InputDecoration(
                                 label: Text(
-                                  S.of(context).identificationNumber,
+                                  S.of(context).drBankAccount,
                                   style: const TextStyle(
                                     color: Colors.black26,
                                     fontFamily: 'VarelaRoundRegular',
                                   ),
                                 ),
                                 border: InputBorder.none),
+                            keyboardType: TextInputType.phone,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return S.of(context).required;
                               }
                             },
-                            controller: _identificationNumberController,
+                            controller: _mobileNumberController,
                           ),
                           decoration: BoxDecoration(
                               border: Border.all(color: Colors.black),
@@ -562,7 +397,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                           child: Container(
                             child: TextButton(
                               child: Text(
-                                S.of(context).signUp,
+                                S.of(context).send,
                                 style: const TextStyle(
                                     color: Color(0xFF194D82),
                                     fontFamily: 'VarelaRoundRegular',
@@ -617,7 +452,6 @@ class _RegistrationFormState extends State<RegistrationForm> {
           ),
         ),
       ),
-      key: scaffoldState,
       resizeToAvoidBottomInset: true,
     );
   }

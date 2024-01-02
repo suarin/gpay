@@ -3,10 +3,13 @@ import 'package:gpay/generated/l10n.dart';
 import 'package:gpay/models/general/visa_balance_response.dart';
 import 'package:gpay/models/transfer/cards.dart';
 import 'package:gpay/models/transfer/plastic_card.dart';
+import 'package:gpay/screens/forms/issue/plastic_card_balance_web_view.dart';
 import 'package:gpay/services/general_services.dart';
 import 'package:gpay/services/system_errors.dart';
 import 'package:gpay/services/transfer_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 class VisaBalanceForm extends StatefulWidget {
   const VisaBalanceForm({Key? key}) : super(key: key);
 
@@ -14,7 +17,8 @@ class VisaBalanceForm extends StatefulWidget {
   _VisaBalanceFormState createState() => _VisaBalanceFormState();
 }
 
-class _VisaBalanceFormState extends State<VisaBalanceForm> with WidgetsBindingObserver{
+class _VisaBalanceFormState extends State<VisaBalanceForm>
+    with WidgetsBindingObserver {
   //Variables
   var screenSize, screenWidth, screenHeight;
   final _formKey = GlobalKey<FormState>();
@@ -29,15 +33,16 @@ class _VisaBalanceFormState extends State<VisaBalanceForm> with WidgetsBindingOb
   //function to obtain bank account for picker
   _getPlasticCard() async {
     await TransferServices.getVisaCards().then((list) => {
-      setState(() {
-        cards = Cards.fromJson(list);
-        cardsLoaded = true;
-      })
-    });
+          setState(() {
+            cards = Cards.fromJson(list);
+            cardsLoaded = true;
+          })
+        });
   }
-  //functions for dialogs
-  _showSuccessResponse(BuildContext context, VisaBalanceResponse visaBalanceResponse){
 
+  //functions for dialogs
+  _showSuccessResponse(
+      BuildContext context, VisaBalanceResponse visaBalanceResponse) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -58,14 +63,13 @@ class _VisaBalanceFormState extends State<VisaBalanceForm> with WidgetsBindingOb
                             const SizedBox(
                               child: Text(
                                 'Balance',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold
-                                ),
+                                style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               width: 150,
                             ),
                             SizedBox(
-                              child: Text(visaBalanceResponse.balance.toString()),
+                              child:
+                                  Text(visaBalanceResponse.balance.toString()),
                               width: 150,
                             ),
                           ],
@@ -75,7 +79,7 @@ class _VisaBalanceFormState extends State<VisaBalanceForm> with WidgetsBindingOb
                     margin: const EdgeInsets.only(left: 40),
                   ),
                   ElevatedButton(
-                    child:  Text(S.of(context).close),
+                    child: Text(S.of(context).close),
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0XFF0E325F),
@@ -88,10 +92,9 @@ class _VisaBalanceFormState extends State<VisaBalanceForm> with WidgetsBindingOb
         );
       },
     );
-
   }
 
-  _showErrorResponse(BuildContext context, String errorMessage){
+  _showErrorResponse(BuildContext context, String errorMessage) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -104,11 +107,14 @@ class _VisaBalanceFormState extends State<VisaBalanceForm> with WidgetsBindingOb
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  child: Text(errorMessage, style: const TextStyle(color: Colors.white),),
+                  child: Text(
+                    errorMessage,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                   margin: const EdgeInsets.only(left: 40.0),
                 ),
                 ElevatedButton(
-                  child:  Text(S.of(context).close),
+                  child: Text(S.of(context).close),
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     primary: const Color(0XFF0E325F),
@@ -123,63 +129,79 @@ class _VisaBalanceFormState extends State<VisaBalanceForm> with WidgetsBindingOb
   }
 
   //Check response
-  _checkResponse(BuildContext context, dynamic json) async{
-    if(json['ErrorCode'] == 0){
-
-      VisaBalanceResponse  visaBalanceResponse = VisaBalanceResponse.fromJson(json);
+  _checkResponse(BuildContext context, dynamic json) async {
+    if (json['ErrorCode'] == 0) {
+      VisaBalanceResponse visaBalanceResponse =
+          VisaBalanceResponse.fromJson(json);
       _showSuccessResponse(context, visaBalanceResponse);
-
-    } else{
-      String errorMessage = await SystemErrors.getSystemError(json['ErrorCode']);
+    } else {
+      String errorMessage =
+          await SystemErrors.getSystemError(json['ErrorCode']);
       _showErrorResponse(context, errorMessage);
     }
   }
 
   //Reset form
-  _resetForm(){
+  _resetForm() {
     setState(() {
       isProcessing = false;
-      _visaCardController.text='';
+      _visaCardController.text = '';
     });
   }
+
   //Execute registration
   _executeTransaction(BuildContext context) async {
     setState(() {
       isProcessing = true;
     });
-    await GeneralServices.getVisaBalance(selectedCard!.cardNo.toString())
-        .then((response) => {
-      if(response['ErrorCode'] != null){
-        _checkResponse(context, response),
-      }
-    }).catchError((error){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            error.toString(),
-            style: const TextStyle(
-              color: Colors.white,
-            ),
-          ),
-          backgroundColor: Colors.red,
+    String cardIssuer = selectedCard!.cardNo.toString().substring(0, 6);
+
+    if (cardIssuer == '421973') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const PlasticCardWebView(),
         ),
       );
-      _resetForm();
-    });
+    } else {
+      await GeneralServices.getVisaBalance(selectedCard!.cardNo.toString())
+          .then((response) => {
+                if (response['ErrorCode'] != null)
+                  {
+                    _checkResponse(context, response),
+                  }
+              })
+          .catchError((error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              error.toString(),
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        _resetForm();
+      });
+    }
+
     _resetForm();
   }
 
-  _offScanning() async{
+  _offScanning() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isScanning',false);
+    await prefs.setBool('isScanning', false);
   }
 
   @override
-  void initState(){
+  void initState() {
     _getPlasticCard();
     _offScanning();
     super.initState();
   }
+
   Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
     screenHeight = MediaQuery.of(context).size.height;
@@ -190,9 +212,9 @@ class _VisaBalanceFormState extends State<VisaBalanceForm> with WidgetsBindingOb
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
-        title:  Text(
+        title: Text(
           S.of(context).visaBalance,
           style: const TextStyle(
             color: Colors.white,
@@ -204,7 +226,7 @@ class _VisaBalanceFormState extends State<VisaBalanceForm> with WidgetsBindingOb
       ),
       key: scaffoldStateKey,
       body: Builder(
-        builder: (context)=>Form(
+        builder: (context) => Form(
           child: SizedBox(
             child: SafeArea(
               child: Stack(
@@ -221,91 +243,93 @@ class _VisaBalanceFormState extends State<VisaBalanceForm> with WidgetsBindingOb
                         children: [
                           cardsLoaded
                               ? Container(
-                            child: DropdownButton<PlasticCard>(
-                              hint:  Text(
-                                S.of(context).selectCard,
-                                style: const TextStyle(
-                                  color: Colors.black26,
-                                  fontFamily: 'VarelaRoundRegular',
-                                ),
-                              ),
-                              value: selectedCard,
-                              onChanged: (PlasticCard? value) {
-                                setState(() {
-                                  selectedCard = value;
-                                });
-                              },
-                              items: cards!.cards!
-                                  .map((PlasticCard plasticCard) {
-                                return DropdownMenuItem<PlasticCard>(
-                                  value: plasticCard,
-                                  child: Container(
-                                    padding: const EdgeInsets.only(
-                                        left: 5.0),
-                                    width: 250,
-                                    child: Text(
-                                      '${plasticCard.cardNo}',
+                                  child: DropdownButton<PlasticCard>(
+                                    hint: Text(
+                                      S.of(context).selectCard,
                                       style: const TextStyle(
-                                        color: Colors.black,
-                                        fontFamily:
-                                        'VarelaRoundRegular',
+                                        color: Colors.black26,
+                                        fontFamily: 'VarelaRoundRegular',
                                       ),
                                     ),
+                                    value: selectedCard,
+                                    onChanged: (PlasticCard? value) {
+                                      setState(() {
+                                        selectedCard = value;
+                                      });
+                                    },
+                                    items: cards!.cards!
+                                        .map((PlasticCard plasticCard) {
+                                      return DropdownMenuItem<PlasticCard>(
+                                        value: plasticCard,
+                                        child: Container(
+                                          padding:
+                                              const EdgeInsets.only(left: 5.0),
+                                          width: 250,
+                                          child: Text(
+                                            '${plasticCard.cardNo}',
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontFamily: 'VarelaRoundRegular',
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
                                   ),
-                                );
-                              }).toList(),
-                            ),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(30.0))),
-                            margin: const EdgeInsets.only(bottom: 15.0),
-                            padding: const EdgeInsets.only(left: 10.0),
-                            width: 300,
-                          )
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color(0XFF01ACCA),
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(30.0))),
+                                  margin: const EdgeInsets.only(bottom: 15.0),
+                                  padding: const EdgeInsets.only(left: 10.0),
+                                  width: 300,
+                                )
                               : Container(
-                            child:  TextField(
-                              decoration: InputDecoration(
-                                  label: Text(
-                                    S.of(context).noCards,
-                                    style: const TextStyle(
-                                      color: Colors.black26,
-                                      fontFamily: 'VarelaRoundRegular',
-                                    ),
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                        label: Text(
+                                          S.of(context).noCards,
+                                          style: const TextStyle(
+                                            color: Colors.black26,
+                                            fontFamily: 'VarelaRoundRegular',
+                                          ),
+                                        ),
+                                        border: InputBorder.none),
+                                    keyboardType: TextInputType.phone,
                                   ),
-                                  border: InputBorder.none),
-                              keyboardType: TextInputType.phone,
-                            ),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(30.0))),
-                            margin: const EdgeInsets.only(bottom: 15.0),
-                            padding: const EdgeInsets.only(left: 10.0),
-                            width: 300,
-                          ),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color(0XFF01ACCA),
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(30.0))),
+                                  margin: const EdgeInsets.only(bottom: 15.0),
+                                  padding: const EdgeInsets.only(left: 10.0),
+                                  width: 300,
+                                ),
                           Visibility(
                             child: Container(
                               child: TextButton(
-                                child:  Text(
+                                child: Text(
                                   S.of(context).send,
                                   style: const TextStyle(
-                                      color: Color(0xFF194D82),
+                                      color: Colors.white,
                                       fontFamily: 'VarelaRoundRegular',
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 20.0
-                                  ),
+                                      fontSize: 20.0),
                                 ),
-                                onPressed: (){
-                                  if(_formKey.currentState!.validate()){
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
                                     _executeTransaction(context);
                                   }
                                 },
                               ),
                               decoration: const BoxDecoration(
-                                  color: Color(0xFF00FFD5),
-                                  borderRadius: BorderRadius.all(Radius.circular(25.0))
-                              ),
+                                  color: Color(0xFF00CAB2),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(25.0))),
                               width: 300.0,
                             ),
                             visible: !isProcessing,
@@ -321,16 +345,14 @@ class _VisaBalanceFormState extends State<VisaBalanceForm> with WidgetsBindingOb
                   Positioned(
                     child: Visibility(
                       child: Container(
-                        child:  Text(
+                        child: Text(
                           S.of(context).processing,
                           style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'VarelaRoundRegular',
                           ),
                         ),
-                        decoration: const BoxDecoration(
-                            color: Colors.grey
-                        ),
+                        decoration: const BoxDecoration(color: Colors.grey),
                         height: 50.0,
                         width: screenWidth,
                         padding: const EdgeInsets.all(10.0),

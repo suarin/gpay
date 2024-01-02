@@ -1,23 +1,26 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gpay/generated/l10n.dart';
-import 'package:gpay/screens/forms/issue/account_transaction_form.dart';
-import 'package:gpay/screens/forms/issue/add_account_form.dart';
-import 'package:gpay/screens/forms/issue/balance_form.dart';
-import 'package:gpay/screens/forms/issue/bills_screen.dart';
-import 'package:gpay/screens/forms/issue/visa_balance_form.dart';
-import 'package:gpay/screens/forms/issue/visa_request_form.dart';
+import 'package:gpay/screens/forms/recharge/cash_app_options_screen.dart';
+import 'package:gpay/screens/forms/recharge/pay_safe_cash_screen_options.dart';
+import 'package:gpay/screens/forms/recharge/paypal_form.dart';
+import 'package:gpay/screens/forms/recharge/qr_form.dart';
+import 'package:gpay/screens/forms/recharge/voucher_form.dart';
+import 'package:gpay/screens/forms/recharge/zelle_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:gpay/screens/forms/drbeneficiary_form.dart';
 
-class IssueScreen extends StatefulWidget {
-  const IssueScreen({Key? key}) : super(key: key);
+class RechargeScreen extends StatefulWidget {
+  const RechargeScreen({Key? key}) : super(key: key);
 
   @override
-  _IssueScreenState createState() => _IssueScreenState();
+  _RechargeScreenState createState() => _RechargeScreenState();
 }
 
-class _IssueScreenState extends State<IssueScreen> with WidgetsBindingObserver {
-  var screenSize, screenWidth, screenHeight;
+class _RechargeScreenState extends State<RechargeScreen>
+    with WidgetsBindingObserver {
+  //Variables
+  final GlobalKey<ScaffoldState> scaffoldStateKey = GlobalKey<ScaffoldState>();
+  bool isProcessing = false;
 
   _offScanning() async {
     final prefs = await SharedPreferences.getInstance();
@@ -31,9 +34,8 @@ class _IssueScreenState extends State<IssueScreen> with WidgetsBindingObserver {
   }
 
   Widget build(BuildContext context) {
-    screenSize = MediaQuery.of(context).size;
-    screenHeight = MediaQuery.of(context).size.height;
-    screenWidth = MediaQuery.of(context).size.width;
+    var screenHeight = MediaQuery.of(context).size.height;
+    var screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
@@ -44,7 +46,7 @@ class _IssueScreenState extends State<IssueScreen> with WidgetsBindingObserver {
           height: 150.0,
         ),
         title: Text(
-          S.of(context).requisition,
+          S.of(context).loads,
           style: const TextStyle(
             color: Colors.white,
             fontFamily: 'VarealRoundRegular',
@@ -64,13 +66,14 @@ class _IssueScreenState extends State<IssueScreen> with WidgetsBindingObserver {
                       child: Row(
                         children: [
                           Container(
-                            child: Image.asset('images/icons/card_icon.png'),
-                            height: 25.0,
+                            child: Image.asset(
+                                'images/icons/deposit_zelle_icon.png'),
+                            height: 35.0,
                             margin: const EdgeInsets.only(right: 20.0),
-                            width: 25.0,
+                            width: 35.0,
                           ),
                           Text(
-                            S.of(context).virtualCardBalance,
+                            '${S.of(context).deposit} / Zelle',
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'VarelaRoundRegular',
@@ -83,160 +86,9 @@ class _IssueScreenState extends State<IssueScreen> with WidgetsBindingObserver {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const BalanceForm(),
+                            builder: (context) => ZelleAlert(),
                           ),
                         );
-                      },
-                    ),
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      color: Color(0xFF00CAB2),
-                    ),
-                    margin: const EdgeInsets.only(bottom: 10.0),
-                    padding: const EdgeInsets.only(left: 20.0),
-                    width: 325,
-                    height: 80,
-                  ),
-                  Container(
-                    child: TextButton(
-                      child: Row(
-                        children: [
-                          Container(
-                            child: Image.asset('images/icons/card_icon.png'),
-                            height: 35.0,
-                            margin: const EdgeInsets.only(right: 20.0),
-                            width: 35.0,
-                          ),
-                          Text(
-                            S.of(context).visaBalance,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'VarelaRoundRegular',
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const VisaBalanceForm(),
-                          ),
-                        );
-                      },
-                    ),
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      color: Color(0xFF00CAB2),
-                    ),
-                    margin: const EdgeInsets.only(bottom: 10.0),
-                    padding: const EdgeInsets.only(left: 20.0),
-                    width: 325,
-                    height: 80,
-                  ),
-                  Container(
-                    child: TextButton(
-                      child: Row(
-                        children: [
-                          Container(
-                            child:
-                                Image.asset('images/icons/issue_card_icon.png'),
-                            height: 35.0,
-                            margin: const EdgeInsets.only(right: 20.0),
-                            width: 35.0,
-                          ),
-                          Text(
-                            S.of(context).visaRequest,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'VarelaRoundRegular',
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const VisaRequestForm()));
-                      },
-                    ),
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      color: Color(0xFF00CAB2),
-                    ),
-                    margin: const EdgeInsets.only(bottom: 10.0),
-                    padding: const EdgeInsets.only(left: 20.0),
-                    width: 325,
-                    height: 80,
-                  ),
-                  Container(
-                    child: TextButton(
-                      child: Row(
-                        children: [
-                          Container(
-                            child: Image.asset('images/icons/balance_icon.png'),
-                            height: 35.0,
-                            margin: const EdgeInsets.only(right: 20.0),
-                            width: 35.0,
-                          ),
-                          Text(
-                            S.of(context).viewTransactions,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'VarelaRoundRegular',
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const AccountTransactionForm(),
-                          ),
-                        );
-                      },
-                    ),
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      color: Color(0xFF00CAB2),
-                    ),
-                    margin: const EdgeInsets.only(bottom: 10.0),
-                    padding: const EdgeInsets.only(left: 20.0),
-                    width: 325,
-                    height: 80,
-                  ),
-                  Container(
-                    child: TextButton(
-                      child: Row(
-                        children: [
-                          Container(
-                            child: Image.asset('images/icons/card_icon.png'),
-                            height: 50.0,
-                            margin: const EdgeInsets.only(right: 20.0),
-                            width: 50.0,
-                          ),
-                          Text(
-                            S.of(context).addAccount,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'VarelaRoundRegular',
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const AddAccountForm(),
-                            ));
                       },
                     ),
                     decoration: const BoxDecoration(
@@ -253,13 +105,14 @@ class _IssueScreenState extends State<IssueScreen> with WidgetsBindingObserver {
                       child: Row(
                         children: [
                           Container(
-                            child: Image.asset('images/icons/card_icon.png'),
-                            height: 50.0,
+                            child:
+                                Image.asset('images/icons/merchant_icon.png'),
+                            height: 35.0,
                             margin: const EdgeInsets.only(right: 20.0),
-                            width: 50.0,
+                            width: 35.0,
                           ),
                           Text(
-                            S.of(context).drBeneficiary,
+                            '${S.of(context).merchant}s',
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'VarelaRoundRegular',
@@ -270,16 +123,163 @@ class _IssueScreenState extends State<IssueScreen> with WidgetsBindingObserver {
                       ),
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const DrBeneficiaryForm(),
-                            ));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const VoucherForm(),
+                          ),
+                        );
                       },
                     ),
                     decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      color: Color(0xFF00CAB2),
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        color: Color(0xFF00CAB2)),
+                    margin: const EdgeInsets.only(bottom: 10.0),
+                    padding: const EdgeInsets.only(left: 20.0),
+                    width: 325,
+                    height: 70,
+                  ),
+                  Container(
+                    child: TextButton(
+                      child: Row(
+                        children: [
+                          Container(
+                            child: Image.asset('images/icons/qr_icon.png'),
+                            height: 35.0,
+                            margin: const EdgeInsets.only(right: 20.0),
+                            width: 35.0,
+                          ),
+                          Text(
+                            S.of(context).scanQr,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'VarelaRoundRegular',
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold),
+                          )
+                        ],
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const QrForm(),
+                          ),
+                        );
+                      },
                     ),
+                    decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        color: Color(0xFF00CAB2)),
+                    margin: const EdgeInsets.only(bottom: 10.0),
+                    padding: const EdgeInsets.only(left: 20.0),
+                    width: 325,
+                    height: 80,
+                  ),
+                  Container(
+                    child: TextButton(
+                      child: Row(
+                        children: [
+                          Container(
+                            child: Image.asset('images/icons/ps_cash_logo.png'),
+                            height: 70.0,
+                            margin: const EdgeInsets.only(right: 20.0),
+                            width: 70.0,
+                          ),
+                          const Text(
+                            'PaySafe:Cash',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'VarelaRoundRegular',
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold),
+                          )
+                        ],
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const PaySafeCashScreenOptions()),
+                        );
+                      },
+                    ),
+                    decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        color: Color(0xFF00CAB2)),
+                    margin: const EdgeInsets.only(bottom: 10.0),
+                    padding: const EdgeInsets.only(left: 20.0),
+                    width: 325,
+                    height: 70,
+                  ),
+                  Container(
+                    child: TextButton(
+                      child: Row(
+                        children: [
+                          Container(
+                            child: Image.asset('images/icons/paypal_icon.png'),
+                            height: 70.0,
+                            margin: const EdgeInsets.only(right: 20.0),
+                            width: 70.0,
+                          ),
+                          const Text(
+                            'PAYPAL',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'VarelaRoundRegular',
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold),
+                          )
+                        ],
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const PayPalForm()),
+                        );
+                      },
+                    ),
+                    decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        color: Color(0xFF00CAB2)),
+                    margin: const EdgeInsets.only(bottom: 10.0),
+                    padding: const EdgeInsets.only(left: 20.0),
+                    width: 325,
+                    height: 70,
+                  ),
+                  Container(
+                    child: TextButton(
+                      child: Row(
+                        children: [
+                          Container(
+                            child: Image.asset('images/icons/cash_app.png'),
+                            height: 70.0,
+                            margin: const EdgeInsets.only(right: 20.0),
+                            width: 70.0,
+                          ),
+                          const Text(
+                            'CashApp',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'VarelaRoundRegular',
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold),
+                          )
+                        ],
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const CashAppOptionsScreen()),
+                        );
+                      },
+                    ),
+                    decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        color: Color(0xFF00CAB2)),
                     margin: const EdgeInsets.only(bottom: 10.0),
                     padding: const EdgeInsets.only(left: 20.0),
                     width: 325,
@@ -295,7 +295,7 @@ class _IssueScreenState extends State<IssueScreen> with WidgetsBindingObserver {
                 child: Image.asset('images/logos/gpay_blue_logo_87x40.png'),
                 width: 87,
               ),
-              top: screenHeight - 140.0,
+              top: screenHeight - 150.0,
               left: (screenWidth - 87) / 2,
             ),
           ],

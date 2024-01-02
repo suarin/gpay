@@ -6,17 +6,19 @@ import 'package:gpay/models/transfer/plastic_card.dart';
 import 'package:gpay/services/general_services.dart';
 import 'package:gpay/services/system_errors.dart';
 import 'package:gpay/services/transfer_services.dart';
+import 'package:gpay/widgets/transfer_disclosure_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class VirtualCardTransferForm extends StatefulWidget {
   const VirtualCardTransferForm({Key? key}) : super(key: key);
 
   @override
-  _VirtualCardTransferFormState createState() => _VirtualCardTransferFormState();
+  _VirtualCardTransferFormState createState() =>
+      _VirtualCardTransferFormState();
 }
 
-class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with WidgetsBindingObserver{
-
+class _VirtualCardTransferFormState extends State<VirtualCardTransferForm>
+    with WidgetsBindingObserver {
   //Variables
   var screenSize, screenWidth, screenHeight;
   final _formKey = GlobalKey<FormState>();
@@ -29,15 +31,18 @@ class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with 
   AuthorizationResponse authorizationResponse = AuthorizationResponse();
   PlasticCard? selectedCard;
   Cards? cards;
+  String testAmount = '20';
+  String testCard = '5183750209249117';
+  String testWebPin = '9295';
 
   //function to obtain bank account for picker
   _getPlasticCard() async {
     await GeneralServices.getVirtualCards().then((list) => {
-      setState(() {
-        cards = Cards.fromJson(list);
-        cardsLoaded = true;
-      })
-    });
+          setState(() {
+            cards = Cards.fromJson(list);
+            cardsLoaded = true;
+          })
+        });
   }
 
   //functions for dialogs
@@ -60,16 +65,17 @@ class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with 
                       children: [
                         Row(
                           children: [
-                             SizedBox(
+                            SizedBox(
                               child: Text(
                                 S.of(context).authorization,
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               ),
                               width: 150,
                             ),
                             SizedBox(
                               child:
-                              Text(authorizationResponse.authNo.toString()),
+                                  Text(authorizationResponse.authNo.toString()),
                               width: 150,
                             ),
                           ],
@@ -79,7 +85,7 @@ class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with 
                     margin: const EdgeInsets.only(left: 40),
                   ),
                   ElevatedButton(
-                    child:  Text(S.of(context).close),
+                    child: Text(S.of(context).close),
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0XFF0E325F),
@@ -114,7 +120,7 @@ class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with 
                   margin: const EdgeInsets.only(left: 40.0),
                 ),
                 ElevatedButton(
-                  child:  Text(S.of(context).close),
+                  child: Text(S.of(context).close),
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     primary: const Color(0XFF0E325F),
@@ -133,11 +139,11 @@ class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with 
     try {
       if (json['ErrorCode'] == 0) {
         AuthorizationResponse authorizationResponse =
-        AuthorizationResponse.fromJson(json);
+            AuthorizationResponse.fromJson(json);
         _showSuccessResponse(context, authorizationResponse);
       } else {
         String errorMessage =
-        await SystemErrors.getSystemError(json['ErrorCode']);
+            await SystemErrors.getSystemError(json['ErrorCode']);
         _showErrorResponse(context, errorMessage);
       }
     } catch (e) {
@@ -160,14 +166,14 @@ class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with 
     setState(() {
       isProcessing = true;
     });
-    await TransferServices.getVisaLoad(_passwordController.text,
-        _amountController.text, selectedCard!.cardNo.toString())
+    await TransferServices.getVirtualCardLoad(_passwordController.text,
+            _amountController.text, selectedCard!.cardNo.toString())
         .then((response) => {
-      if (response['ErrorCode'] != null)
-        {
-          _checkResponse(context, response),
-        }
-    })
+              if (response['ErrorCode'] != null)
+                {
+                  _checkResponse(context, response),
+                }
+            })
         .catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -191,12 +197,14 @@ class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isScanning', false);
   }
+
   @override
   void initState() {
     _getPlasticCard();
     _offScanning();
     super.initState();
   }
+
   Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
     screenHeight = MediaQuery.of(context).size.height;
@@ -207,9 +215,9 @@ class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with 
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
-        title:  Text(
+        title: Text(
           S.of(context).toVirtualCard,
           style: const TextStyle(
             color: Colors.white,
@@ -236,74 +244,80 @@ class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with 
                     child: SizedBox(
                       child: ListView(
                         children: [
+                          TransferDisclosureWidget(
+                            text: S.of(context).transfersDisclosure,
+                          ),
                           cardsLoaded
                               ? Container(
-                            child: DropdownButton<PlasticCard>(
-                              hint:  Text(
-                                S.of(context).selectCard,
-                                style: const TextStyle(
-                                  color: Colors.black26,
-                                  fontFamily: 'VarelaRoundRegular',
-                                ),
-                              ),
-                              value: selectedCard,
-                              onChanged: (PlasticCard? value) {
-                                setState(() {
-                                  selectedCard = value;
-                                });
-                              },
-                              items: cards!.cards!
-                                  .map((PlasticCard plasticCard) {
-                                return DropdownMenuItem<PlasticCard>(
-                                  value: plasticCard,
-                                  child: Container(
-                                    padding: const EdgeInsets.only(
-                                        left: 5.0),
-                                    width: 250,
-                                    child: Text(
-                                      '******${plasticCard.cardNo!.substring(12)} ${plasticCard.holderName}',
+                                  child: DropdownButton<PlasticCard>(
+                                    hint: Text(
+                                      S.of(context).selectCard,
                                       style: const TextStyle(
-                                        color: Colors.black,
-                                        fontFamily:
-                                        'VarelaRoundRegular',
+                                        color: Colors.black26,
+                                        fontFamily: 'VarelaRoundRegular',
                                       ),
                                     ),
+                                    value: selectedCard,
+                                    onChanged: (PlasticCard? value) {
+                                      setState(() {
+                                        selectedCard = value;
+                                      });
+                                    },
+                                    items: cards!.cards!
+                                        .map((PlasticCard plasticCard) {
+                                      return DropdownMenuItem<PlasticCard>(
+                                        value: plasticCard,
+                                        child: Container(
+                                          padding:
+                                              const EdgeInsets.only(left: 5.0),
+                                          width: 250,
+                                          child: Text(
+                                            '******${plasticCard.cardNo!.substring(12)} ${plasticCard.holderName}',
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontFamily: 'VarelaRoundRegular',
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
                                   ),
-                                );
-                              }).toList(),
-                            ),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(30.0))),
-                            margin: const EdgeInsets.only(bottom: 15.0),
-                            padding: const EdgeInsets.only(left: 10.0),
-                            width: 300,
-                          )
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color(0XFF01ACCA),
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(30.0))),
+                                  margin: const EdgeInsets.only(bottom: 15.0),
+                                  padding: const EdgeInsets.only(left: 10.0),
+                                  width: 300,
+                                )
                               : Container(
-                            child:  TextField(
-                              decoration: InputDecoration(
-                                  label: Text(
-                                    S.of(context).noCards,
-                                    style: const TextStyle(
-                                      color: Colors.black26,
-                                      fontFamily: 'VarelaRoundRegular',
-                                    ),
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                        label: Text(
+                                          S.of(context).noCards,
+                                          style: const TextStyle(
+                                            color: Colors.black26,
+                                            fontFamily: 'VarelaRoundRegular',
+                                          ),
+                                        ),
+                                        border: InputBorder.none),
+                                    keyboardType: TextInputType.phone,
                                   ),
-                                  border: InputBorder.none),
-                              keyboardType: TextInputType.phone,
-                            ),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(30.0))),
-                            margin: const EdgeInsets.only(bottom: 15.0),
-                            padding: const EdgeInsets.only(left: 10.0),
-                            width: 300,
-                          ),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color(0XFF01ACCA),
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(30.0))),
+                                  margin: const EdgeInsets.only(bottom: 15.0),
+                                  padding: const EdgeInsets.only(left: 10.0),
+                                  width: 300,
+                                ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).amount,
                                     style: const TextStyle(
@@ -321,7 +335,9 @@ class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with 
                               controller: _amountController,
                             ),
                             decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
+                                border: Border.all(
+                                  color: const Color(0XFF01ACCA),
+                                ),
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
@@ -330,7 +346,7 @@ class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with 
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).webPin,
                                     style: const TextStyle(
@@ -348,7 +364,9 @@ class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with 
                               controller: _passwordController,
                             ),
                             decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
+                                border: Border.all(
+                                  color: const Color(0XFF01ACCA),
+                                ),
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
@@ -358,10 +376,10 @@ class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with 
                           Visibility(
                             child: Container(
                               child: TextButton(
-                                child:  Text(
+                                child: Text(
                                   S.of(context).send,
                                   style: const TextStyle(
-                                      color: Color(0xFF194D82),
+                                      color: Colors.white,
                                       fontFamily: 'VarelaRoundRegular',
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20.0),
@@ -373,9 +391,9 @@ class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with 
                                 },
                               ),
                               decoration: const BoxDecoration(
-                                  color: Color(0xFF00FFD5),
+                                  color: Color(0xFF00CAB2),
                                   borderRadius:
-                                  BorderRadius.all(Radius.circular(25.0))),
+                                      BorderRadius.all(Radius.circular(25.0))),
                               width: 300.0,
                             ),
                             visible: !isProcessing,
@@ -391,7 +409,7 @@ class _VirtualCardTransferFormState extends State<VirtualCardTransferForm> with 
                   Positioned(
                     child: Visibility(
                       child: Container(
-                        child:  Text(
+                        child: Text(
                           S.of(context).processing,
                           style: const TextStyle(
                             color: Colors.white,

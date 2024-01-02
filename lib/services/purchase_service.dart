@@ -6,10 +6,9 @@ import 'package:enough_convert/enough_convert.dart';
 
 import 'api_resources.dart';
 
-class PurchaseService{
-
-  static Future<dynamic> getCHolderID() async{
-    String reqCHolderID='0';
+class PurchaseService {
+  static Future<dynamic> getCHolderID() async {
+    String reqCHolderID = '0';
     final prefs = await SharedPreferences.getInstance();
     if (prefs.get('cHolderID') != null) {
       reqCHolderID = prefs.get('cHolderID').toString();
@@ -19,23 +18,19 @@ class PurchaseService{
 
   //Pago con QR
   static Future<dynamic> getQrPay(
-      String reqMMerchantID,
-      reqCPwd,
-      reqStrTotal) async{
+      String reqMMerchantID, reqMEmpoyeeID, reqCPwd, reqStrTotal) async {
     //get CHolderID
     var reqCHolderID = await getCHolderID();
     //Prepare Uri
-    var url = Uri.parse('${ApiResources.baseUri + ApiResources.qrPayUri}?ReqMerchantID=${ApiResources.reqMerchantID}&ReqToken=${ApiResources.reqToken}&ReqMMerchantID=$reqMMerchantID&ReqCHolderID=$reqCHolderID&ReqCPwd=$reqCPwd&ReqStrTotal=$reqStrTotal');
+    var url = Uri.parse(
+        '${ApiResources.baseUri! + ApiResources.qrPayUri}?ReqMerchantID=${ApiResources.reqMerchantID}&ReqToken=${ApiResources.reqToken}&ReqMMerchantID=$reqMMerchantID&ReqMEmployeeID=$reqMEmpoyeeID&ReqCHolderID=$reqCHolderID&ReqCPwd=$reqCPwd&ReqStrTotal=$reqStrTotal');
     //Send card transfer
     http.Response response;
-    try{
-      response = await http.get(
-          url,
-          headers: {
-            HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded"
-          }
-      );
-    }catch(e){
+    try {
+      response = await http.get(url, headers: {
+        HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded"
+      });
+    } catch (e) {
       return 'Error: ${e.toString()}';
     }
     //validates that http response is ok code 200
@@ -43,9 +38,9 @@ class PurchaseService{
       //if is ok return the decoded body of response, returns: CHolderID, UserName, CardNo, Currency and Balance
       const codec = Windows1252Codec(allowInvalid: false);
       final decoded = codec.decode(response.bodyBytes);
-      try{
+      try {
         return json.decode(decoded);
-      }catch(e){
+      } catch (e) {
         return 'Error json deoce: ${e.toString()}';
       }
     } else {
@@ -54,22 +49,19 @@ class PurchaseService{
   }
 
   static Future<dynamic> getVirtualTransactions(
-      String reqVirtualCardNo,
-      String reqEndDate) async{
+      String reqVirtualCardNo, String reqEndDate) async {
     //get CHolderID
     var reqCHolderID = await getCHolderID();
     //Prepare Uri
-    var url = Uri.parse('${ApiResources.baseUri + ApiResources.virtualCardTransactionsUri}?ReqMerchantID=${ApiResources.reqMerchantID}&ReqToken=${ApiResources.reqToken}&ReqVirtualCardNo=$reqVirtualCardNo&ReqEndDate=$reqEndDate');
+    var url = Uri.parse(
+        '${ApiResources.baseUri! + ApiResources.virtualCardTransactionsUri}?ReqMerchantID=${ApiResources.reqMerchantID}&ReqToken=${ApiResources.reqToken}&ReqVirtualCardNo=$reqVirtualCardNo&ReqEndDate=$reqEndDate');
     //Send card transfer
     http.Response response;
-    try{
-      response = await http.get(
-          url,
-          headers: {
-            HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded"
-          }
-      );
-    }catch(e){
+    try {
+      response = await http.get(url, headers: {
+        HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded"
+      });
+    } catch (e) {
       return 'Error: ${e.toString()}';
     }
     //validates that http response is ok code 200
@@ -77,10 +69,10 @@ class PurchaseService{
       //if is ok return the decoded body of response, returns: CHolderID, UserName, CardNo, Currency and Balance
       const codec = Windows1252Codec(allowInvalid: false);
       final decoded = codec.decode(response.bodyBytes);
-      final fixJson =decoded.replaceAll('},]', '}]');
-      try{
+      final fixJson = decoded.replaceAll('},]', '}]');
+      try {
         return json.decode(fixJson);
-      }catch(e){
+      } catch (e) {
         return 'Error json deoce: ${e.toString()}';
       }
     } else {
@@ -89,23 +81,19 @@ class PurchaseService{
   }
 
   static Future<dynamic> getVisaTransactions(
-      String reqVisaCardNo,
-      String reqEndDate) async{
-
+      String reqVisaCardNo, String reqEndDate) async {
     //get CHolderID
     var reqCHolderID = await getCHolderID();
     //Prepare Uri
-    var url = Uri.parse('${ApiResources.baseUri + ApiResources.visaCardTransactionsUri}?ReqMerchantID=${ApiResources.reqMerchantID}&ReqToken=${ApiResources.reqToken}&ReqVisaCardNo=$reqVisaCardNo&ReqEndDate=$reqEndDate');
+    var url = Uri.parse(
+        '${ApiResources.baseUri! + ApiResources.visaCardTransactionsUri}?ReqMerchantID=${ApiResources.reqMerchantID}&ReqToken=${ApiResources.reqToken}&ReqVisaCardNo=$reqVisaCardNo&ReqEndDate=$reqEndDate');
     //Send card transfer
     http.Response response;
-    try{
-      response = await http.get(
-          url,
-          headers: {
-            HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded"
-          }
-      );
-    }catch(e){
+    try {
+      response = await http.get(url, headers: {
+        HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded"
+      });
+    } catch (e) {
       return 'Error: ${e.toString()}';
     }
     //validates that http response is ok code 200
@@ -113,10 +101,10 @@ class PurchaseService{
       //if is ok return the decoded body of response, returns: CHolderID, UserName, CardNo, Currency and Balance
       const codec = Windows1252Codec(allowInvalid: false);
       final decoded = codec.decode(response.bodyBytes);
-      final fixJson =decoded.replaceAll('},]', '}]');
-      try{
+      final fixJson = decoded.replaceAll('},]', '}]');
+      try {
         return json.decode(fixJson);
-      }catch(e){
+      } catch (e) {
         return 'Error json deoce: ${e.toString()}';
       }
     } else {
@@ -124,6 +112,33 @@ class PurchaseService{
     }
   }
 
-
-
+  static Future<dynamic> getVirtualCardIssue(String reqPassword) async {
+    //get CHolderID
+    var reqCHolderID = await getCHolderID();
+    //Prepare Uri
+    var url = Uri.parse(
+        '${ApiResources.baseUri! + ApiResources.virtualCardIssueUri}?ReqMerchantID=${ApiResources.reqMerchantID}&ReqToken=${ApiResources.reqToken}&ReqCHolderID=$reqCHolderID&ReqPassword=$reqPassword');
+    //Send card transfer
+    http.Response response;
+    try {
+      response = await http.get(url, headers: {
+        HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded"
+      });
+    } catch (e) {
+      return 'Error: ${e.toString()}';
+    }
+    //validates that http response is ok code 200
+    if (response.statusCode == 200) {
+      //if is ok return the decoded body of response, returns: CHolderID, UserName, CardNo, Currency and Balance
+      const codec = Windows1252Codec(allowInvalid: false);
+      final decoded = codec.decode(response.bodyBytes);
+      try {
+        return json.decode(decoded);
+      } catch (e) {
+        return 'Error json deoce: ${e.toString()}';
+      }
+    } else {
+      return 'Error en el servidor: ${response.body}';
+    }
+  }
 }

@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:gpay/generated/l10n.dart';
-import 'package:gpay/models/transfer/bank_account.dart';
-import 'package:gpay/models/transfer/bank_accounts.dart';
-import 'package:gpay/models/transfer/bank_transfer_response.dart';
+import 'package:gpay/models/transfer/card_transfer_response.dart';
 import 'package:gpay/services/system_errors.dart';
 import 'package:gpay/services/transfer_services.dart';
 import 'package:gpay/widgets/transfer_disclosure_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class BankTransferForm extends StatefulWidget {
-  const BankTransferForm({Key? key}) : super(key: key);
+class LlegaAccountTransferForm extends StatefulWidget {
+  const LlegaAccountTransferForm({Key? key}) : super(key: key);
 
   @override
-  _BankTransferFormState createState() => _BankTransferFormState();
+  _LlegaAccountTransferFormState createState() => _LlegaAccountTransferFormState();
 }
 
-class _BankTransferFormState extends State<BankTransferForm>
+class _LlegaAccountTransferFormState extends State<LlegaAccountTransferForm>
     with WidgetsBindingObserver {
   //Variables
   var screenSize, screenWidth, screenHeight;
@@ -23,25 +21,15 @@ class _BankTransferFormState extends State<BankTransferForm>
   final GlobalKey<ScaffoldState> scaffoldStateKey = GlobalKey<ScaffoldState>();
   final _passwordController = TextEditingController();
   final _amountController = TextEditingController();
+  final _destinationCardController = TextEditingController();
   final _notesController = TextEditingController();
-  BankAccount? selectedBankAccount;
-  BankAccounts? bankAccounts;
-  bool bankAccountsLoaded = false;
   bool isProcessing = false;
+  bool accountsLoaded = false;
 
-  //function to obtain bank account for picker
-  _getBankAccounts() async {
-    await TransferServices.getBankAccounts().then((list) => {
-          setState(() {
-            bankAccounts = BankAccounts.fromJson(list);
-            bankAccountsLoaded = true;
-          })
-        });
-  }
 
   //functions for dialogs
   _showSuccessResponse(
-      BuildContext context, BankTransferResponse bankTransferResponse) {
+      BuildContext context, CardTransferResponse cardTransferResponse) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -61,15 +49,33 @@ class _BankTransferFormState extends State<BankTransferForm>
                           children: [
                             SizedBox(
                               child: Text(
-                                S.of(context).card,
+                                S.of(context).authorization,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold),
                               ),
                               width: 150,
                             ),
                             SizedBox(
+                              child:
+                                  Text(cardTransferResponse.authNo.toString()),
+                              width: 150,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(
                               child: Text(
-                                  bankTransferResponse.cardNumber.toString()),
+                                S.of(context).receiver,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              width: 150,
+                            ),
+                            SizedBox(
+                              child: Text(cardTransferResponse.transferTo
+                                  .toString()
+                                  .toUpperCase()),
                               width: 150,
                             ),
                           ],
@@ -85,25 +91,8 @@ class _BankTransferFormState extends State<BankTransferForm>
                               width: 150,
                             ),
                             SizedBox(
-                              child: Text(bankTransferResponse.debitedAmount
-                                  .toString()),
-                              width: 150,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            SizedBox(
                               child: Text(
-                                S.of(context).authorization,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              width: 150,
-                            ),
-                            SizedBox(
-                              child:
-                                  Text(bankTransferResponse.authNo.toString()),
+                                  'USD ${cardTransferResponse.debitedAmount.toString()}'),
                               width: 150,
                             ),
                           ],
@@ -165,9 +154,9 @@ class _BankTransferFormState extends State<BankTransferForm>
   //Check response
   _checkResponse(BuildContext context, dynamic json) async {
     if (json['ErrorCode'] == 0) {
-      BankTransferResponse bankTransferResponse =
-          BankTransferResponse.fromJson(json);
-      _showSuccessResponse(context, bankTransferResponse);
+      CardTransferResponse cardTransferResponse =
+          CardTransferResponse.fromJson(json);
+      _showSuccessResponse(context, cardTransferResponse);
     } else {
       String errorMessage =
           await SystemErrors.getSystemError(json['ErrorCode']);
@@ -175,13 +164,14 @@ class _BankTransferFormState extends State<BankTransferForm>
     }
   }
 
-  //Reset from
+  //Reset form
   _resetForm() {
     setState(() {
       isProcessing = false;
-      _amountController.text = '';
-      _notesController.text = '';
       _passwordController.text = '';
+      _notesController.text = '';
+      _amountController.text = '';
+      _destinationCardController.text = '';
     });
   }
 
@@ -190,17 +180,17 @@ class _BankTransferFormState extends State<BankTransferForm>
     setState(() {
       isProcessing = true;
     });
-    await TransferServices.getBankTransfer(
-            _passwordController.text,
-            _amountController.text,
-            selectedBankAccount!.bankId.toString(),
-            _notesController.text)
+    await TransferServices.getCardTransferInt(
+        _passwordController.text,
+        _destinationCardController.text,
+        _amountController.text,
+        _notesController.text)
         .then((response) => {
-              if (response['ErrorCode'] != null)
-                {
-                  _checkResponse(context, response),
-                }
-            })
+      if (response['ErrorCode'] != null)
+        {
+          _checkResponse(context, response),
+        }
+    })
         .catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -225,7 +215,6 @@ class _BankTransferFormState extends State<BankTransferForm>
 
   @override
   void initState() {
-    _getBankAccounts();
     _offScanning();
     super.initState();
   }
@@ -244,11 +233,11 @@ class _BankTransferFormState extends State<BankTransferForm>
           height: 150.0,
         ),
         title: Text(
-          S.of(context).toUSBank,
+          S.of(context).tollegaAccounts,
           style: const TextStyle(
             color: Colors.white,
             fontFamily: 'VarealRoundRegular',
-            fontSize: 20.0,
+            fontSize: 16.0,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -273,72 +262,35 @@ class _BankTransferFormState extends State<BankTransferForm>
                           TransferDisclosureWidget(
                             text: S.of(context).transfersDisclosure,
                           ),
-                          bankAccountsLoaded
-                              ? Container(
-                                  child: DropdownButton<BankAccount>(
-                                    hint: Text(
-                                      S.of(context).selectBankAccount,
-                                      style: const TextStyle(
-                                        color: Colors.black26,
-                                        fontFamily: 'VarelaRoundRegular',
-                                      ),
+                          Container(
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                  label: Text(
+                                    S.of(context).toLLEGAAccount,
+                                    style: const TextStyle(
+                                      color: Colors.black26,
+                                      fontFamily: 'VarelaRoundRegular',
                                     ),
-                                    value: selectedBankAccount,
-                                    onChanged: (BankAccount? value) {
-                                      setState(() {
-                                        selectedBankAccount = value;
-                                      });
-                                    },
-                                    items: bankAccounts!.accounts!
-                                        .map((BankAccount bankAccount) {
-                                      return DropdownMenuItem<BankAccount>(
-                                        value: bankAccount,
-                                        child: Container(
-                                          padding:
-                                              const EdgeInsets.only(left: 5.0),
-                                          width: 250,
-                                          child: Text(
-                                            '${bankAccount.bankName.toString()} ${bankAccount.accountNo.toString()}',
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontFamily: 'VarelaRoundRegular',
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }).toList(),
                                   ),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: const Color(0XFF01ACCA),
-                                      ),
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(30.0))),
-                                  margin: const EdgeInsets.only(bottom: 15.0),
-                                  padding: const EdgeInsets.only(left: 10.0),
-                                  width: 300,
-                                )
-                              : Container(
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                        label: Text(
-                                          S.of(context).noBankAccounts,
-                                          style: const TextStyle(
-                                            color: Colors.black26,
-                                            fontFamily: 'VarelaRoundRegular',
-                                          ),
-                                        ),
-                                        border: InputBorder.none),
-                                    keyboardType: TextInputType.phone,
-                                  ),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(30.0))),
-                                  margin: const EdgeInsets.only(bottom: 15.0),
-                                  padding: const EdgeInsets.only(left: 10.0),
-                                  width: 300,
+                                  border: InputBorder.none),
+                              keyboardType: TextInputType.phone,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return S.of(context).required;
+                                }
+                              },
+                              controller: _destinationCardController,
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: const Color(0XFF01ACCA),
                                 ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
+                            margin: const EdgeInsets.only(bottom: 15.0),
+                            padding: const EdgeInsets.only(left: 10.0),
+                            width: 300,
+                          ),
                           Container(
                             child: TextFormField(
                               decoration: InputDecoration(
@@ -407,13 +359,13 @@ class _BankTransferFormState extends State<BankTransferForm>
                                     ),
                                   ),
                                   border: InputBorder.none),
+                              obscureText: true,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
                               controller: _passwordController,
-                              obscureText: true,
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(

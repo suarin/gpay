@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gpay/generated/l10n.dart';
 import 'package:gpay/screens/forms/shop/shop_form.dart';
 import 'package:gpay/screens/forms/shop/transaction_form.dart';
+import 'package:gpay/screens/forms/shop/virtual_card_issue_form.dart';
 import 'package:gpay/screens/forms/shop/visa_transactions_form.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,22 +13,21 @@ class ShopScreen extends StatefulWidget {
   _ShopScreenState createState() => _ShopScreenState();
 }
 
-class _ShopScreenState extends State<ShopScreen> with WidgetsBindingObserver{
-
+class _ShopScreenState extends State<ShopScreen> with WidgetsBindingObserver {
   var screenSize, screenWidth, screenHeight;
 
-  _offScanning() async{
+  _offScanning() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isScanning',false);
+    await prefs.setBool('isScanning', false);
   }
 
   @override
-  void initState(){
+  void initState() {
     _offScanning();
     super.initState();
   }
-  Widget build(BuildContext context) {
 
+  Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
@@ -38,9 +38,9 @@ class _ShopScreenState extends State<ShopScreen> with WidgetsBindingObserver{
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
-        title:  Text(
+        title: Text(
           S.of(context).shop,
           style: const TextStyle(
             color: Colors.white,
@@ -66,18 +66,17 @@ class _ShopScreenState extends State<ShopScreen> with WidgetsBindingObserver{
                             margin: const EdgeInsets.only(right: 20.0),
                             width: 25.0,
                           ),
-                           Text(
+                          Text(
                             S.of(context).scanQr,
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'VarelaRoundRegular',
                                 fontSize: 20,
-                                fontWeight: FontWeight.bold
-                            ),
+                                fontWeight: FontWeight.bold),
                           )
                         ],
                       ),
-                      onPressed: (){
+                      onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -88,8 +87,7 @@ class _ShopScreenState extends State<ShopScreen> with WidgetsBindingObserver{
                     ),
                     decoration: const BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        color: Color(0XFF00B70D)
-                    ),
+                        color: Color(0xFF00CAB2)),
                     margin: const EdgeInsets.only(bottom: 10.0),
                     padding: const EdgeInsets.only(left: 20.0),
                     width: 325,
@@ -105,18 +103,17 @@ class _ShopScreenState extends State<ShopScreen> with WidgetsBindingObserver{
                             margin: const EdgeInsets.only(right: 20.0),
                             width: 25.0,
                           ),
-                           Text(
+                          Text(
                             S.of(context).virtualCardTransactions,
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'VarelaRoundRegular',
                                 fontSize: 20,
-                                fontWeight: FontWeight.bold
-                            ),
+                                fontWeight: FontWeight.bold),
                           )
                         ],
                       ),
-                      onPressed: (){
+                      onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -127,8 +124,7 @@ class _ShopScreenState extends State<ShopScreen> with WidgetsBindingObserver{
                     ),
                     decoration: const BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        color: Color(0XFF00B70D)
-                    ),
+                        color: Color(0xFF00CAB2)),
                     margin: const EdgeInsets.only(bottom: 10.0),
                     padding: const EdgeInsets.only(left: 20.0),
                     width: 325,
@@ -144,18 +140,17 @@ class _ShopScreenState extends State<ShopScreen> with WidgetsBindingObserver{
                             margin: const EdgeInsets.only(right: 20.0),
                             width: 25.0,
                           ),
-                           Text(
+                          Text(
                             S.of(context).visaTransactions,
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'VarelaRoundRegular',
                                 fontSize: 20,
-                                fontWeight: FontWeight.bold
-                            ),
+                                fontWeight: FontWeight.bold),
                           )
                         ],
                       ),
-                      onPressed: (){
+                      onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -166,8 +161,44 @@ class _ShopScreenState extends State<ShopScreen> with WidgetsBindingObserver{
                     ),
                     decoration: const BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        color: Color(0XFF00B70D)
+                        color: Color(0xFF00CAB2)),
+                    margin: const EdgeInsets.only(bottom: 10.0),
+                    padding: const EdgeInsets.only(left: 20.0),
+                    width: 325,
+                    height: 80,
+                  ),
+                  Container(
+                    child: TextButton(
+                      child: Row(
+                        children: [
+                          Container(
+                            child: Image.asset('images/icons/card_icon.png'),
+                            height: 25.0,
+                            margin: const EdgeInsets.only(right: 20.0),
+                            width: 25.0,
+                          ),
+                          Text(
+                            S.of(context).virtualCardIssue,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'VarelaRoundRegular',
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          )
+                        ],
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const VirtualCardIssueForm(),
+                          ),
+                        );
+                      },
                     ),
+                    decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        color: Color(0xFF00CAB2)),
                     margin: const EdgeInsets.only(bottom: 10.0),
                     padding: const EdgeInsets.only(left: 20.0),
                     width: 325,
@@ -176,11 +207,12 @@ class _ShopScreenState extends State<ShopScreen> with WidgetsBindingObserver{
                 ],
               ),
               top: 10.0,
-              left: (screenWidth - 325 ) / 2,
+              left: (screenWidth - 325) / 2,
             ),
             Positioned(
               child: SizedBox(
                 child: Image.asset('images/logos/gpay_blue_logo_87x40.png'),
+                width: 87,
               ),
               top: screenHeight - 150.0,
               left: (screenWidth - 87) / 2,

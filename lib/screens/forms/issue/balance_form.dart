@@ -14,8 +14,7 @@ class BalanceForm extends StatefulWidget {
   _BalanceFormState createState() => _BalanceFormState();
 }
 
-class _BalanceFormState extends State<BalanceForm> with WidgetsBindingObserver{
-
+class _BalanceFormState extends State<BalanceForm> with WidgetsBindingObserver {
   //Variables
   var screenSize, screenWidth, screenHeight;
   final _formKey = GlobalKey<FormState>();
@@ -30,16 +29,16 @@ class _BalanceFormState extends State<BalanceForm> with WidgetsBindingObserver{
   //function to obtain bank account for picker
   _getVirtualCard() async {
     await GeneralServices.getVirtualCards().then((list) => {
-      setState(() {
-        cards = Cards.fromJson(list);
-        cardsLoaded = true;
-      })
-    });
+          setState(() {
+            cards = Cards.fromJson(list);
+            cardsLoaded = true;
+          })
+        });
   }
 
-   //functions for dialogs
-  _showSuccessResponse(BuildContext context, VirtualCardBalanceResponse virtualCardBalanceResponse){
-
+  //functions for dialogs
+  _showSuccessResponse(BuildContext context,
+      VirtualCardBalanceResponse virtualCardBalanceResponse) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -60,14 +59,13 @@ class _BalanceFormState extends State<BalanceForm> with WidgetsBindingObserver{
                             const SizedBox(
                               child: Text(
                                 'Balance',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold
-                                ),
+                                style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               width: 150,
                             ),
                             SizedBox(
-                              child: Text(virtualCardBalanceResponse.balance.toString()),
+                              child: Text(virtualCardBalanceResponse.balance
+                                  .toString()),
                               width: 150,
                             ),
                           ],
@@ -90,10 +88,9 @@ class _BalanceFormState extends State<BalanceForm> with WidgetsBindingObserver{
         );
       },
     );
-
   }
 
-  _showErrorResponse(BuildContext context, String errorMessage){
+  _showErrorResponse(BuildContext context, String errorMessage) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -106,7 +103,10 @@ class _BalanceFormState extends State<BalanceForm> with WidgetsBindingObserver{
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  child: Text(errorMessage, style: const TextStyle(color: Colors.white),),
+                  child: Text(
+                    errorMessage,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                   margin: const EdgeInsets.only(left: 40.0),
                 ),
                 ElevatedButton(
@@ -125,20 +125,20 @@ class _BalanceFormState extends State<BalanceForm> with WidgetsBindingObserver{
   }
 
   //Check response
-  _checkResponse(BuildContext context, dynamic json) async{
-    if(json['ErrorCode'] == 0){
-
-      VirtualCardBalanceResponse  virtualCardBalanceResponse = VirtualCardBalanceResponse.fromJson(json);
+  _checkResponse(BuildContext context, dynamic json) async {
+    if (json['ErrorCode'] == 0) {
+      VirtualCardBalanceResponse virtualCardBalanceResponse =
+          VirtualCardBalanceResponse.fromJson(json);
       _showSuccessResponse(context, virtualCardBalanceResponse);
-
-    } else{
-      String errorMessage = await SystemErrors.getSystemError(json['ErrorCode']);
+    } else {
+      String errorMessage =
+          await SystemErrors.getSystemError(json['ErrorCode']);
       _showErrorResponse(context, errorMessage);
     }
   }
 
   //Reset Form
-  _resetForm(){
+  _resetForm() {
     setState(() {
       isProcessing = false;
       _virtualCardController.text = '';
@@ -152,10 +152,12 @@ class _BalanceFormState extends State<BalanceForm> with WidgetsBindingObserver{
     });
     await GeneralServices.getVirtualCardBalance(selectedCard!.cardNo.toString())
         .then((response) => {
-      if(response['ErrorCode'] != null){
-        _checkResponse(context, response),
-      }
-    }).catchError((error){
+              if (response['ErrorCode'] != null)
+                {
+                  _checkResponse(context, response),
+                }
+            })
+        .catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -177,21 +179,21 @@ class _BalanceFormState extends State<BalanceForm> with WidgetsBindingObserver{
     _getVirtualCard();
     super.initState();
   }
-  Widget build(BuildContext context) {
 
+  Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
-        title:  Text(
+        title: Text(
           S.of(context).virtualCardBalance,
           style: const TextStyle(
             color: Colors.white,
@@ -203,7 +205,7 @@ class _BalanceFormState extends State<BalanceForm> with WidgetsBindingObserver{
       ),
       key: scaffoldStateKey,
       body: Builder(
-        builder: (context)=>Form(
+        builder: (context) => Form(
           child: SizedBox(
             child: SafeArea(
               child: Stack(
@@ -220,91 +222,93 @@ class _BalanceFormState extends State<BalanceForm> with WidgetsBindingObserver{
                         children: [
                           cardsLoaded
                               ? Container(
-                            child: DropdownButton<PlasticCard>(
-                              hint:  Text(
-                                S.of(context).selectCard,
-                                style: const TextStyle(
-                                  color: Colors.black26,
-                                  fontFamily: 'VarelaRoundRegular',
-                                ),
-                              ),
-                              value: selectedCard,
-                              onChanged: (PlasticCard? value) {
-                                setState(() {
-                                  selectedCard = value;
-                                });
-                              },
-                              items: cards!.cards!
-                                  .map((PlasticCard plasticCard) {
-                                return DropdownMenuItem<PlasticCard>(
-                                  value: plasticCard,
-                                  child: Container(
-                                    padding: const EdgeInsets.only(
-                                        left: 5.0),
-                                    width: 250,
-                                    child: Text(
-                                      '${plasticCard.cardNo}',
+                                  child: DropdownButton<PlasticCard>(
+                                    hint: Text(
+                                      S.of(context).selectCard,
                                       style: const TextStyle(
-                                        color: Colors.black,
-                                        fontFamily:
-                                        'VarelaRoundRegular',
+                                        color: Colors.black26,
+                                        fontFamily: 'VarelaRoundRegular',
                                       ),
                                     ),
+                                    value: selectedCard,
+                                    onChanged: (PlasticCard? value) {
+                                      setState(() {
+                                        selectedCard = value;
+                                      });
+                                    },
+                                    items: cards!.cards!
+                                        .map((PlasticCard plasticCard) {
+                                      return DropdownMenuItem<PlasticCard>(
+                                        value: plasticCard,
+                                        child: Container(
+                                          padding:
+                                              const EdgeInsets.only(left: 5.0),
+                                          width: 250,
+                                          child: Text(
+                                            '${plasticCard.cardNo}',
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontFamily: 'VarelaRoundRegular',
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
                                   ),
-                                );
-                              }).toList(),
-                            ),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(30.0))),
-                            margin: const EdgeInsets.only(bottom: 15.0),
-                            padding: const EdgeInsets.only(left: 10.0),
-                            width: 300,
-                          )
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color(0XFF01ACCA),
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(30.0))),
+                                  margin: const EdgeInsets.only(bottom: 15.0),
+                                  padding: const EdgeInsets.only(left: 10.0),
+                                  width: 300,
+                                )
                               : Container(
-                            child:  TextField(
-                              decoration: InputDecoration(
-                                  label: Text(
-                                    S.of(context).noCards,
-                                    style: const TextStyle(
-                                      color: Colors.black26,
-                                      fontFamily: 'VarelaRoundRegular',
-                                    ),
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                        label: Text(
+                                          S.of(context).noCards,
+                                          style: const TextStyle(
+                                            color: Colors.black26,
+                                            fontFamily: 'VarelaRoundRegular',
+                                          ),
+                                        ),
+                                        border: InputBorder.none),
+                                    keyboardType: TextInputType.phone,
                                   ),
-                                  border: InputBorder.none),
-                              keyboardType: TextInputType.phone,
-                            ),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(30.0))),
-                            margin: const EdgeInsets.only(bottom: 15.0),
-                            padding: const EdgeInsets.only(left: 10.0),
-                            width: 300,
-                          ),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color(0XFF01ACCA),
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(30.0))),
+                                  margin: const EdgeInsets.only(bottom: 15.0),
+                                  padding: const EdgeInsets.only(left: 10.0),
+                                  width: 300,
+                                ),
                           Visibility(
                             child: Container(
                               child: TextButton(
                                 child: Text(
                                   S.of(context).send,
                                   style: const TextStyle(
-                                      color: Color(0xFF194D82),
+                                      color: Colors.white,
                                       fontFamily: 'VarelaRoundRegular',
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 20.0
-                                  ),
+                                      fontSize: 20.0),
                                 ),
-                                onPressed: (){
-                                  if(_formKey.currentState!.validate()){
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
                                     _executeTransaction(context);
                                   }
                                 },
                               ),
                               decoration: const BoxDecoration(
-                                  color: Color(0xFF00FFD5),
-                                  borderRadius: BorderRadius.all(Radius.circular(25.0))
-                              ),
+                                  color: Color(0xFF00CAB2),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(25.0))),
                               width: 300.0,
                             ),
                             visible: !isProcessing,
@@ -327,9 +331,7 @@ class _BalanceFormState extends State<BalanceForm> with WidgetsBindingObserver{
                             fontFamily: 'VarelaRoundRegular',
                           ),
                         ),
-                        decoration: const BoxDecoration(
-                            color: Colors.grey
-                        ),
+                        decoration: const BoxDecoration(color: Colors.grey),
                         height: 50.0,
                         width: screenWidth,
                         padding: const EdgeInsets.all(10.0),

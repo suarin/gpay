@@ -50,6 +50,16 @@ class S {
     return Localizations.of<S>(context, S);
   }
 
+  /// `Account No.`
+  String get accountNumber {
+    return Intl.message(
+      'Account No.',
+      name: 'accountNumber',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Add Account`
   String get addAccount {
     return Intl.message(
@@ -110,11 +120,51 @@ class S {
     );
   }
 
+  /// `Bank`
+  String get bank {
+    return Intl.message(
+      'Bank',
+      name: 'bank',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rate`
+  String get rate {
+    return Intl.message(
+      'Exchange Rate',
+      name: 'rate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Balance`
+  String get balance {
+    return Intl.message(
+      'Balance',
+      name: 'balance',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Bills`
   String get bills {
     return Intl.message(
       'Bills',
       name: 'bills',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel Account`
+  String get cancelAccount {
+    return Intl.message(
+      'Cancel Account',
+      name: 'cancelAccount',
       desc: '',
       args: [],
     );
@@ -140,11 +190,41 @@ class S {
     );
   }
 
+  /// `RD Beneficiary ID`
+  String get benefId {
+    return Intl.message(
+      'DR Beneficiary ID',
+      name: 'benefId',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Card Number`
   String get cardNumber {
     return Intl.message(
       'Card Number',
       name: 'cardNumber',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `CashApp Pay`
+  String get cashAppPay {
+    return Intl.message(
+      'CashApp Pay',
+      name: 'cashAppPay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `CashApp \nPay Request`
+  String get cashAppPayRequest {
+    return Intl.message(
+      'CashApp \nPay Request',
+      name: 'cashAppPayRequest',
       desc: '',
       args: [],
     );
@@ -200,6 +280,16 @@ class S {
     );
   }
 
+  /// `Credentials`
+  String get credentials {
+    return Intl.message(
+      'Credentials',
+      name: 'credentials',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Credit`
   String get credit {
     return Intl.message(
@@ -220,11 +310,31 @@ class S {
     );
   }
 
+  /// `Debited USD`
+  String get debitedusd {
+    return Intl.message(
+      'Debited USD',
+      name: 'debitedusd',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Deposit`
   String get deposit {
     return Intl.message(
       'Deposit',
       name: 'deposit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deposit Request`
+  String get depositRequest {
+    return Intl.message(
+      'Deposit Request',
+      name: 'depositRequest',
       desc: '',
       args: [],
     );
@@ -320,11 +430,31 @@ class S {
     );
   }
 
+  /// `Cedula Number`
+  String get cedulaNumber {
+    return Intl.message(
+      'Cedula Number',
+      name: 'cedulaNumber',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Inserted`
   String get inserted {
     return Intl.message(
       'Inserted',
       name: 'inserted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invoice Address`
+  String get invoiceAddress {
+    return Intl.message(
+      'Invoice Address',
+      name: 'invoiceAddress',
       desc: '',
       args: [],
     );
@@ -345,6 +475,36 @@ class S {
     return Intl.message(
       'Loads',
       name: 'loads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dominican Republic`
+  String get domrepublic {
+    return Intl.message(
+      'Dominican Republic',
+      name: 'domrepublic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Guatemala`
+  String get guatemala {
+    return Intl.message(
+      'Guatemala',
+      name: 'guatemala',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Venezuela`
+  String get venezuela {
+    return Intl.message(
+      'Venezuela',
+      name: 'venezuela',
       desc: '',
       args: [],
     );
@@ -410,6 +570,26 @@ class S {
     );
   }
 
+  /// `No DR Beneficiary`
+  String get noDrBeneficiary {
+    return Intl.message(
+      'No DR Beneficiary',
+      name: 'noDrBeneficiary',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DR Bank Account`
+  String get drBankAccount {
+    return Intl.message(
+      'Bank Account Nro',
+      name: 'drBankAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `No Bills`
   String get noBills {
     return Intl.message(
@@ -470,6 +650,16 @@ class S {
     );
   }
 
+  /// `Change Password`
+  String get changepassword {
+    return Intl.message(
+      'Change Password',
+      name: 'changepassword',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Pay`
   String get pay {
     return Intl.message(
@@ -480,11 +670,41 @@ class S {
     );
   }
 
+  /// `PayPal Load`
+  String get payPalLoad {
+    return Intl.message(
+      'PayPal Load',
+      name: 'payPalLoad',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request \nPaySafe Code`
+  String get paySafeCodeRequest {
+    return Intl.message(
+      'Request \nPaySafe Code',
+      name: 'paySafeCodeRequest',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Phone`
   String get phone {
     return Intl.message(
       'Phone',
       name: 'phone',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `CellPhone`
+  String get cellphone {
+    return Intl.message(
+      'Cell Phone',
+      name: 'cellphone',
       desc: '',
       args: [],
     );
@@ -560,6 +780,16 @@ class S {
     );
   }
 
+  /// `Recipient`
+  String get recipient {
+    return Intl.message(
+      'Recipient',
+      name: 'recipient',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Reference`
   String get reference {
     return Intl.message(
@@ -585,6 +815,16 @@ class S {
     return Intl.message(
       'Repeat Web Pin',
       name: 'repeatWebPin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request Deposit First`
+  String get requestDepositFirst {
+    return Intl.message(
+      'Request Deposit First',
+      name: 'requestDepositFirst',
       desc: '',
       args: [],
     );
@@ -640,6 +880,16 @@ class S {
     );
   }
 
+  /// `Transfer Amount DRP`
+  String get AmountDOP {
+    return Intl.message(
+      'Transferred DOP',
+      name: 'AmountDOP',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Scan QR`
   String get scanQr {
     return Intl.message(
@@ -665,6 +915,16 @@ class S {
     return Intl.message(
       'Select Bank Account',
       name: 'selectBankAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select DR Beneficiary`
+  String get selectDrBeneficiary {
+    return Intl.message(
+      'Select DR Beneficiary',
+      name: 'selectDrBeneficiary',
       desc: '',
       args: [],
     );
@@ -700,11 +960,41 @@ class S {
     );
   }
 
+  /// `Select DR Bank`
+  String get selectDrBank {
+    return Intl.message(
+      'Select DR Bank',
+      name: 'selectDrBank',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ` To LLEGA Account`
+  String get toLLEGAAccount {
+    return Intl.message(
+      'To LLEGA Account',
+      name: 'toLLEGAAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Send`
   String get send {
     return Intl.message(
       'Send',
       name: 'send',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sender Name`
+  String get sender {
+    return Intl.message(
+      'Sender Name',
+      name: 'sender',
       desc: '',
       args: [],
     );
@@ -800,6 +1090,46 @@ class S {
     );
   }
 
+  /// `Intern Transfer`
+  String get interntransfer {
+    return Intl.message(
+      'Intern Transfer',
+      name: 'interntransfer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `International Transfer`
+  String get internationaltransfer {
+    return Intl.message(
+      'International Transfer',
+      name: 'internationaltransfer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `To perform this transaction, you must maintain a minimum balance of $5.00 in your account.`
+  String get transfersDisclosure {
+    return Intl.message(
+      'To perform this transaction, you must maintain a minimum balance of \$5.00 in your account.',
+      name: 'transfersDisclosure',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `To perform this transaction, you must send the transfer from your own PayPal Account to https://www.paypal.com/paypalme/NEOTEL/.`
+  String get paypalDisclosure {
+    return Intl.message(
+      'To perform this transaction, you must send the transfer from your own PayPal Account to https://www.paypal.com/paypalme/NEOTEL/',
+      name: 'paypalDisclosure',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `To GPS Accounts`
   String get toGpsAccounts {
     return Intl.message(
@@ -810,11 +1140,51 @@ class S {
     );
   }
 
-  /// `To Mobil Pay`
+  /// `To LLEGA Accounts`
+  String get tollegaAccounts {
+    return Intl.message(
+      'To LLEGA Accounts',
+      name: 'tollegaAccounts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `To DR Bank Account`
+  String get toDrBankAccount {
+    return Intl.message(
+      'To DR Bank Account',
+      name: 'toDrBankAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Token`
+  String get token {
+    return Intl.message(
+      'Token',
+      name: 'token',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `To Mobile Pay`
   String get toMobile {
     return Intl.message(
-      'To Mobil Pay',
+      'To Mobile Pay',
       name: 'toMobile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The maximum amount allowed for this transaction is $50.00.`
+  String get toMobileDisclosure {
+    return Intl.message(
+      'The maximum amount allowed for this transaction is \$50.00.',
+      name: 'toMobileDisclosure',
       desc: '',
       args: [],
     );
@@ -830,6 +1200,26 @@ class S {
     );
   }
 
+  /// `DR Banks`
+  String get drBank {
+    return Intl.message(
+      'DR Banks',
+      name: 'drBank',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DR Beneficiary`
+  String get drBeneficiary {
+    return Intl.message(
+      'DR Beneficiary',
+      name: 'drBeneficiary',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `To Virtual Card`
   String get toVirtualCard {
     return Intl.message(
@@ -840,10 +1230,10 @@ class S {
     );
   }
 
-  /// `To Visa Card`
+  /// `To Plastic Card`
   String get toVisaCard {
     return Intl.message(
-      'To Visa Card',
+      'To Plastic Card',
       name: 'toVisaCard',
       desc: '',
       args: [],
@@ -860,11 +1250,31 @@ class S {
     );
   }
 
+  /// `Virtual Card`
+  String get virtualCard {
+    return Intl.message(
+      'Virtual Card',
+      name: 'virtualCard',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Virtual Card Balance`
   String get virtualCardBalance {
     return Intl.message(
       'Virtual Card Balance',
       name: 'virtualCardBalance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Virtual Card Issue`
+  String get virtualCardIssue {
+    return Intl.message(
+      'Virtual Card Issue',
+      name: 'virtualCardIssue',
       desc: '',
       args: [],
     );
@@ -880,30 +1290,30 @@ class S {
     );
   }
 
-  /// `Visa Balance`
+  /// `Plastic Card\nBalance`
   String get visaBalance {
     return Intl.message(
-      'Visa Balance',
+      'Plastic Card\nBalance',
       name: 'visaBalance',
       desc: '',
       args: [],
     );
   }
 
-  /// `Visa Request`
+  /// `Plastic Card\n Request`
   String get visaRequest {
     return Intl.message(
-      'Visa Request',
+      'Plastic Card\n Request',
       name: 'visaRequest',
       desc: '',
       args: [],
     );
   }
 
-  /// `Visa Transactions`
+  /// `Plastic Card Transactions`
   String get visaTransactions {
     return Intl.message(
-      'Visa Transactions',
+      'Plastic Card Transactions',
       name: 'visaTransactions',
       desc: '',
       args: [],
@@ -930,10 +1340,10 @@ class S {
     );
   }
 
-  /// `Wen Pin`
+  /// `Web Pin`
   String get webPin {
     return Intl.message(
-      'Wen Pin',
+      'Web Pin',
       name: 'webPin',
       desc: '',
       args: [],
@@ -955,6 +1365,56 @@ class S {
     return Intl.message(
       'Zelle Account',
       name: 'zelleAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `ZELLE TRANSFER'S IMPORTANT INFORMATION`
+  String get zelleInfoTitle {
+    return Intl.message(
+      'ZELLE TRANSFER\'S IMPORTANT INFORMATION',
+      name: 'zelleInfoTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Before making a Zelle Transfer to recharge your GPS account carefully review the following information:`
+  String get zelleInfoDescription {
+    return Intl.message(
+      'Before making a Zelle Transfer to recharge your GPS account carefully review the following information:',
+      name: 'zelleInfoDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email: `
+  String get zelleInfoEmailLabel {
+    return Intl.message(
+      'Email: ',
+      name: 'zelleInfoEmailLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `On behalf of: `
+  String get zelleInfoCompanyLabel {
+    return Intl.message(
+      'On behalf of: ',
+      name: 'zelleInfoCompanyLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `MANDATORY: PUT IN REFERENCE *GPS `
+  String get zelleInfoWarning {
+    return Intl.message(
+      'MANDATORY: PUT IN REFERENCE *GPS ',
+      name: 'zelleInfoWarning',
       desc: '',
       args: [],
     );

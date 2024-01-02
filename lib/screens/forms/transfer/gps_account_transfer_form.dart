@@ -5,7 +5,9 @@ import 'package:gpay/models/transfer/bgp_accounts.dart';
 import 'package:gpay/models/transfer/card_transfer_response.dart';
 import 'package:gpay/services/system_errors.dart';
 import 'package:gpay/services/transfer_services.dart';
+import 'package:gpay/widgets/transfer_disclosure_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 class GpsAccountTransferForm extends StatefulWidget {
   const GpsAccountTransferForm({Key? key}) : super(key: key);
 
@@ -13,8 +15,8 @@ class GpsAccountTransferForm extends StatefulWidget {
   _GpsAccountTransferFormState createState() => _GpsAccountTransferFormState();
 }
 
-class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with WidgetsBindingObserver{
-
+class _GpsAccountTransferFormState extends State<GpsAccountTransferForm>
+    with WidgetsBindingObserver {
   //Variables
   var screenSize, screenWidth, screenHeight;
   final _formKey = GlobalKey<FormState>();
@@ -24,23 +26,23 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
   final _destinationCardController = TextEditingController();
   final _notesController = TextEditingController();
   bool isProcessing = false;
-  bool accountsLoaded= false;
+  bool accountsLoaded = false;
   BgpAccount? selectedBgpAccount;
   BgpAccounts? bgpAccounts;
 
   //function to obtain GPS Accounts
   _getBgpAccounts() async {
     await TransferServices.getBgpAccounts().then((list) => {
-      setState(() {
-        bgpAccounts = BgpAccounts.fromJson(list);
-        accountsLoaded = true;
-      })
-    });
+          setState(() {
+            bgpAccounts = BgpAccounts.fromJson(list);
+            accountsLoaded = true;
+          })
+        });
   }
 
   //functions for dialogs
-  _showSuccessResponse(BuildContext context, CardTransferResponse cardTransferResponse){
-
+  _showSuccessResponse(
+      BuildContext context, CardTransferResponse cardTransferResponse) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -62,49 +64,48 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
                               child: Text(
                                 S.of(context).authorization,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold
-                                ),
+                                    fontWeight: FontWeight.bold),
                               ),
                               width: 150,
                             ),
                             SizedBox(
-                              child: Text(cardTransferResponse.authNo.toString()),
+                              child:
+                                  Text(cardTransferResponse.authNo.toString()),
                               width: 150,
                             ),
                           ],
                         ),
                         Row(
                           children: [
-                             SizedBox(
+                            SizedBox(
                               child: Text(
                                 S.of(context).receiver,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold
-                                ),
+                                    fontWeight: FontWeight.bold),
                               ),
                               width: 150,
                             ),
                             SizedBox(
-                              child: Text(cardTransferResponse.transferTo.toString().toUpperCase()),
+                              child: Text(cardTransferResponse.transferTo
+                                  .toString()
+                                  .toUpperCase()),
                               width: 150,
                             ),
                           ],
                         ),
                         Row(
                           children: [
-                             SizedBox(
+                            SizedBox(
                               child: Text(
                                 S.of(context).amountDebited,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold
-                                ),
+                                    fontWeight: FontWeight.bold),
                               ),
                               width: 150,
                             ),
                             SizedBox(
                               child: Text(
-                                  'USD ${cardTransferResponse.debitedAmount.toString()}'
-                              ),
+                                  'USD ${cardTransferResponse.debitedAmount.toString()}'),
                               width: 150,
                             ),
                           ],
@@ -114,7 +115,7 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
                     margin: const EdgeInsets.only(left: 40),
                   ),
                   ElevatedButton(
-                    child:  Text(S.of(context).close),
+                    child: Text(S.of(context).close),
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0XFF0E325F),
@@ -127,10 +128,9 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
         );
       },
     );
-
   }
 
-  _showErrorResponse(BuildContext context, String errorMessage){
+  _showErrorResponse(BuildContext context, String errorMessage) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -143,11 +143,14 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  child: Text(errorMessage, style: const TextStyle(color: Colors.white),),
+                  child: Text(
+                    errorMessage,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                   margin: const EdgeInsets.only(left: 40.0),
                 ),
                 ElevatedButton(
-                  child:  Text(S.of(context).close),
+                  child: Text(S.of(context).close),
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     primary: const Color(0XFF0E325F),
@@ -162,25 +165,25 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
   }
 
   //Check response
-  _checkResponse(BuildContext context, dynamic json) async{
-    if(json['ErrorCode'] == 0){
-
-      CardTransferResponse  cardTransferResponse = CardTransferResponse.fromJson(json);
+  _checkResponse(BuildContext context, dynamic json) async {
+    if (json['ErrorCode'] == 0) {
+      CardTransferResponse cardTransferResponse =
+          CardTransferResponse.fromJson(json);
       _showSuccessResponse(context, cardTransferResponse);
-
-    } else{
-      String errorMessage = await SystemErrors.getSystemError(json['ErrorCode']);
+    } else {
+      String errorMessage =
+          await SystemErrors.getSystemError(json['ErrorCode']);
       _showErrorResponse(context, errorMessage);
     }
   }
 
   //Reset form
-  _resetForm(){
+  _resetForm() {
     setState(() {
       isProcessing = false;
       _passwordController.text = '';
-      _notesController.text ='';
-      _amountController.text ='';
+      _notesController.text = '';
+      _amountController.text = '';
       _destinationCardController.text = '';
     });
   }
@@ -190,12 +193,18 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
     setState(() {
       isProcessing = true;
     });
-    await TransferServices.getCardTransfer(_passwordController.text, selectedBgpAccount!.accountNo.toString(),_amountController.text, _notesController.text)
+    await TransferServices.getCardTransfer(
+            _passwordController.text,
+            selectedBgpAccount!.accountNo.toString(),
+            _amountController.text,
+            _notesController.text)
         .then((response) => {
-      if(response['ErrorCode'] != null){
-        _checkResponse(context, response),
-      }
-    }).catchError((error){
+              if (response['ErrorCode'] != null)
+                {
+                  _checkResponse(context, response),
+                }
+            })
+        .catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -212,19 +221,19 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
     _resetForm();
   }
 
-  _offScanning() async{
+  _offScanning() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isScanning',false);
+    await prefs.setBool('isScanning', false);
   }
 
   @override
-  void initState(){
+  void initState() {
     _offScanning();
     _getBgpAccounts();
     super.initState();
   }
-  Widget build(BuildContext context) {
 
+  Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
@@ -235,10 +244,10 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
-        title:  Text(
-         S.of(context).toGpsAccounts,
+        title: Text(
+          S.of(context).toGpsAccounts,
           style: const TextStyle(
             color: Colors.white,
             fontFamily: 'VarealRoundRegular',
@@ -249,7 +258,7 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
       ),
       key: scaffoldStateKey,
       body: Builder(
-        builder: (context)=>Form(
+        builder: (context) => Form(
           child: SizedBox(
             child: SafeArea(
               child: Stack(
@@ -264,74 +273,80 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
                     child: SizedBox(
                       child: ListView(
                         children: [
+                          TransferDisclosureWidget(
+                            text: S.of(context).transfersDisclosure,
+                          ),
                           accountsLoaded
                               ? Container(
-                            child: DropdownButton<BgpAccount>(
-                              hint:  Text(
-                                S.of(context).selectGpsAccount,
-                                style: const TextStyle(
-                                  color: Colors.black26,
-                                  fontFamily: 'VarelaRoundRegular',
-                                ),
-                              ),
-                              value: selectedBgpAccount,
-                              onChanged: (BgpAccount? value) {
-                                setState(() {
-                                  selectedBgpAccount = value;
-                                });
-                              },
-                              items: bgpAccounts!.accounts!
-                                  .map((BgpAccount bgpAccount) {
-                                return DropdownMenuItem<BgpAccount>(
-                                  value: bgpAccount,
-                                  child: Container(
-                                    padding: const EdgeInsets.only(
-                                        left: 5.0),
-                                    width: 250,
-                                    child: Text(
-                                      bgpAccount.holderName!,
+                                  child: DropdownButton<BgpAccount>(
+                                    hint: Text(
+                                      S.of(context).selectGpsAccount,
                                       style: const TextStyle(
-                                        color: Colors.black,
-                                        fontFamily:
-                                        'VarelaRoundRegular',
+                                        color: Colors.black26,
+                                        fontFamily: 'VarelaRoundRegular',
                                       ),
                                     ),
+                                    value: selectedBgpAccount,
+                                    onChanged: (BgpAccount? value) {
+                                      setState(() {
+                                        selectedBgpAccount = value;
+                                      });
+                                    },
+                                    items: bgpAccounts!.accounts!
+                                        .map((BgpAccount bgpAccount) {
+                                      return DropdownMenuItem<BgpAccount>(
+                                        value: bgpAccount,
+                                        child: Container(
+                                          padding:
+                                              const EdgeInsets.only(left: 5.0),
+                                          width: 250,
+                                          child: Text(
+                                            bgpAccount.holderName!,
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontFamily: 'VarelaRoundRegular',
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
                                   ),
-                                );
-                              }).toList(),
-                            ),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(30.0))),
-                            margin: const EdgeInsets.only(bottom: 15.0),
-                            padding: const EdgeInsets.only(left: 10.0),
-                            width: 300,
-                          )
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color(0XFF01ACCA),
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(30.0))),
+                                  margin: const EdgeInsets.only(bottom: 15.0),
+                                  padding: const EdgeInsets.only(left: 10.0),
+                                  width: 300,
+                                )
                               : Container(
-                            child:  TextField(
-                              decoration: InputDecoration(
-                                  label: Text(
-                                    S.of(context).noCards,
-                                    style: const TextStyle(
-                                      color: Colors.black26,
-                                      fontFamily: 'VarelaRoundRegular',
-                                    ),
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                        label: Text(
+                                          S.of(context).noCards,
+                                          style: const TextStyle(
+                                            color: Colors.black26,
+                                            fontFamily: 'VarelaRoundRegular',
+                                          ),
+                                        ),
+                                        border: InputBorder.none),
+                                    keyboardType: TextInputType.phone,
                                   ),
-                                  border: InputBorder.none),
-                              keyboardType: TextInputType.phone,
-                            ),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(30.0))),
-                            margin: const EdgeInsets.only(bottom: 15.0),
-                            padding: const EdgeInsets.only(left: 10.0),
-                            width: 300,
-                          ),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color(0XFF01ACCA),
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(30.0))),
+                                  margin: const EdgeInsets.only(bottom: 15.0),
+                                  padding: const EdgeInsets.only(left: 10.0),
+                                  width: 300,
+                                ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).amount,
                                     style: const TextStyle(
@@ -339,11 +354,10 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
+                                  border: InputBorder.none),
                               keyboardType: TextInputType.phone,
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -351,17 +365,17 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).note,
                                     style: const TextStyle(
@@ -369,10 +383,9 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                                  border: InputBorder.none),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -380,17 +393,17 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).webPin,
                                     style: const TextStyle(
@@ -398,11 +411,10 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
                                       fontFamily: 'VarelaRoundRegular',
                                     ),
                                   ),
-                                  border: InputBorder.none
-                              ),
+                                  border: InputBorder.none),
                               obscureText: true,
-                              validator: (value){
-                                if(value == null || value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return S.of(context).required;
                                 }
                               },
@@ -410,10 +422,10 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.black
+                                  color: const Color(0XFF01ACCA),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(30.0))
-                            ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
                             padding: const EdgeInsets.only(left: 10.0),
                             width: 300,
@@ -421,25 +433,24 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
                           Visibility(
                             child: Container(
                               child: TextButton(
-                                child:  Text(
+                                child: Text(
                                   S.of(context).send,
                                   style: const TextStyle(
-                                      color: Color(0xFF194D82),
+                                      color: Colors.white,
                                       fontFamily: 'VarelaRoundRegular',
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 20.0
-                                  ),
+                                      fontSize: 20.0),
                                 ),
-                                onPressed: (){
-                                  if(_formKey.currentState!.validate()){
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
                                     _executeTransaction(context);
                                   }
                                 },
                               ),
                               decoration: const BoxDecoration(
-                                  color: Color(0xFF00FFD5),
-                                  borderRadius: BorderRadius.all(Radius.circular(25.0))
-                              ),
+                                  color: Color(0xFF00CAB2),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(25.0))),
                               width: 300.0,
                             ),
                             visible: !isProcessing,
@@ -455,16 +466,14 @@ class _GpsAccountTransferFormState extends State<GpsAccountTransferForm> with Wi
                   Positioned(
                     child: Visibility(
                       child: Container(
-                        child:  Text(
+                        child: Text(
                           S.of(context).processing,
                           style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'VarelaRoundRegular',
                           ),
                         ),
-                        decoration: const BoxDecoration(
-                            color: Colors.grey
-                        ),
+                        decoration: const BoxDecoration(color: Colors.grey),
                         height: 50.0,
                         width: screenWidth,
                         padding: const EdgeInsets.all(10.0),

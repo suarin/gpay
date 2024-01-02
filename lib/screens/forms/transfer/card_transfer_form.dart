@@ -5,6 +5,7 @@ import 'package:gpay/models/transfer/cards.dart';
 import 'package:gpay/models/transfer/plastic_card.dart';
 import 'package:gpay/services/system_errors.dart';
 import 'package:gpay/services/transfer_services.dart';
+import 'package:gpay/widgets/transfer_disclosure_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CardTransferForm extends StatefulWidget {
@@ -17,7 +18,6 @@ class CardTransferForm extends StatefulWidget {
 class _CardTransferFormState extends State<CardTransferForm>
     with WidgetsBindingObserver {
   //Variables
-  var screenSize, screenWidth, screenHeight;
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> scaffoldStateKey = GlobalKey<ScaffoldState>();
   final _passwordController = TextEditingController();
@@ -59,10 +59,11 @@ class _CardTransferFormState extends State<CardTransferForm>
                       children: [
                         Row(
                           children: [
-                             SizedBox(
+                            SizedBox(
                               child: Text(
                                 S.of(context).authorization,
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               ),
                               width: 150,
                             ),
@@ -78,7 +79,7 @@ class _CardTransferFormState extends State<CardTransferForm>
                     margin: const EdgeInsets.only(left: 40),
                   ),
                   ElevatedButton(
-                    child:  Text(S.of(context).close),
+                    child: Text(S.of(context).close),
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0XFF0E325F),
@@ -113,7 +114,7 @@ class _CardTransferFormState extends State<CardTransferForm>
                   margin: const EdgeInsets.only(left: 40.0),
                 ),
                 ElevatedButton(
-                  child:  Text(S.of(context).close),
+                  child: Text(S.of(context).close),
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     primary: const Color(0XFF0E325F),
@@ -199,9 +200,8 @@ class _CardTransferFormState extends State<CardTransferForm>
   }
 
   Widget build(BuildContext context) {
-    screenSize = MediaQuery.of(context).size;
-    screenHeight = MediaQuery.of(context).size.height;
-    screenWidth = MediaQuery.of(context).size.width;
+    var screenHeight = MediaQuery.of(context).size.height;
+    var screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
@@ -209,10 +209,10 @@ class _CardTransferFormState extends State<CardTransferForm>
         flexibleSpace: Image.asset(
           'images/backgrounds/app_bar_header.png',
           fit: BoxFit.fill,
-          height: 80.0,
+          height: 150.0,
         ),
-        title:  Text(
-         S.of(context).toVisaCard,
+        title: Text(
+          S.of(context).toVisaCard,
           style: const TextStyle(
             color: Colors.white,
             fontFamily: 'VarealRoundRegular',
@@ -238,74 +238,80 @@ class _CardTransferFormState extends State<CardTransferForm>
                     child: SizedBox(
                       child: ListView(
                         children: [
+                          TransferDisclosureWidget(
+                            text: S.of(context).transfersDisclosure,
+                          ),
                           cardsLoaded
                               ? Container(
-                            child: DropdownButton<PlasticCard>(
-                              hint:  Text(
-                                S.of(context).selectCard,
-                                style: const TextStyle(
-                                  color: Colors.black26,
-                                  fontFamily: 'VarelaRoundRegular',
-                                ),
-                              ),
-                              value: selectedCard,
-                              onChanged: (PlasticCard? value) {
-                                setState(() {
-                                  selectedCard = value;
-                                });
-                              },
-                              items: cards!.cards!
-                                  .map((PlasticCard plasticCard) {
-                                return DropdownMenuItem<PlasticCard>(
-                                  value: plasticCard,
-                                  child: Container(
-                                    padding: const EdgeInsets.only(
-                                        left: 5.0),
-                                    width: 250,
-                                    child: Text(
-                                      '******${plasticCard.cardNo!.substring(12)} ${plasticCard.holderName}',
+                                  child: DropdownButton<PlasticCard>(
+                                    hint: Text(
+                                      S.of(context).selectCard,
                                       style: const TextStyle(
-                                        color: Colors.black,
-                                        fontFamily:
-                                        'VarelaRoundRegular',
+                                        color: Colors.black26,
+                                        fontFamily: 'VarelaRoundRegular',
                                       ),
                                     ),
+                                    value: selectedCard,
+                                    onChanged: (PlasticCard? value) {
+                                      setState(() {
+                                        selectedCard = value;
+                                      });
+                                    },
+                                    items: cards!.cards!
+                                        .map((PlasticCard plasticCard) {
+                                      return DropdownMenuItem<PlasticCard>(
+                                        value: plasticCard,
+                                        child: Container(
+                                          padding:
+                                              const EdgeInsets.only(left: 5.0),
+                                          width: 250,
+                                          child: Text(
+                                            '******${plasticCard.cardNo!.substring(12)} ${plasticCard.holderName}',
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontFamily: 'VarelaRoundRegular',
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
                                   ),
-                                );
-                              }).toList(),
-                            ),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(30.0))),
-                            margin: const EdgeInsets.only(bottom: 15.0),
-                            padding: const EdgeInsets.only(left: 10.0),
-                            width: 300,
-                          )
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color(0XFF01ACCA),
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(30.0))),
+                                  margin: const EdgeInsets.only(bottom: 15.0),
+                                  padding: const EdgeInsets.only(left: 10.0),
+                                  width: 300,
+                                )
                               : Container(
-                            child:  TextField(
-                              decoration: InputDecoration(
-                                  label: Text(
-                                    S.of(context).noCards,
-                                    style: const TextStyle(
-                                      color: Colors.black26,
-                                      fontFamily: 'VarelaRoundRegular',
-                                    ),
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                        label: Text(
+                                          S.of(context).noCards,
+                                          style: const TextStyle(
+                                            color: Colors.black26,
+                                            fontFamily: 'VarelaRoundRegular',
+                                          ),
+                                        ),
+                                        border: InputBorder.none),
+                                    keyboardType: TextInputType.phone,
                                   ),
-                                  border: InputBorder.none),
-                              keyboardType: TextInputType.phone,
-                            ),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(30.0))),
-                            margin: const EdgeInsets.only(bottom: 15.0),
-                            padding: const EdgeInsets.only(left: 10.0),
-                            width: 300,
-                          ),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color(0XFF01ACCA),
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(30.0))),
+                                  margin: const EdgeInsets.only(bottom: 15.0),
+                                  padding: const EdgeInsets.only(left: 10.0),
+                                  width: 300,
+                                ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
                                     S.of(context).amount,
                                     style: const TextStyle(
@@ -323,7 +329,9 @@ class _CardTransferFormState extends State<CardTransferForm>
                               controller: _amountController,
                             ),
                             decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
+                                border: Border.all(
+                                  color: const Color(0XFF01ACCA),
+                                ),
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
@@ -332,9 +340,9 @@ class _CardTransferFormState extends State<CardTransferForm>
                           ),
                           Container(
                             child: TextFormField(
-                              decoration:  InputDecoration(
+                              decoration: InputDecoration(
                                   label: Text(
-                                   S.of(context).webPin,
+                                    S.of(context).webPin,
                                     style: const TextStyle(
                                       color: Colors.black26,
                                       fontFamily: 'VarelaRoundRegular',
@@ -350,7 +358,9 @@ class _CardTransferFormState extends State<CardTransferForm>
                               controller: _passwordController,
                             ),
                             decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
+                                border: Border.all(
+                                  color: const Color(0XFF01ACCA),
+                                ),
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(30.0))),
                             margin: const EdgeInsets.only(bottom: 15.0),
@@ -360,10 +370,10 @@ class _CardTransferFormState extends State<CardTransferForm>
                           Visibility(
                             child: Container(
                               child: TextButton(
-                                child:  Text(
+                                child: Text(
                                   S.of(context).send,
                                   style: const TextStyle(
-                                      color: Color(0xFF194D82),
+                                      color: Colors.white,
                                       fontFamily: 'VarelaRoundRegular',
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20.0),
@@ -375,7 +385,7 @@ class _CardTransferFormState extends State<CardTransferForm>
                                 },
                               ),
                               decoration: const BoxDecoration(
-                                  color: Color(0xFF00FFD5),
+                                  color: Color(0xFF00CAB2),
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(25.0))),
                               width: 300.0,

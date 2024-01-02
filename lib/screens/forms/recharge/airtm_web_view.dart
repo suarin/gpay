@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class AirTmWebView extends StatefulWidget {
   final String? airTmUrl;
@@ -16,10 +16,7 @@ class _AirTmWebViewState extends State<AirTmWebView> {
   _AirTmWebViewState({Key? key, @required this.airTmUrl});
   @override
   Widget build(BuildContext context) {
-    return WebviewScaffold(
-      url: airTmUrl!,
-      withJavascript: true,
-      withZoom: false,
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         flexibleSpace: Image.asset(
@@ -30,12 +27,14 @@ class _AirTmWebViewState extends State<AirTmWebView> {
         title: const Text(
           'AIRTM',
           style: TextStyle(
-            color: Colors.white,
-            fontFamily: 'VarealRoundRegular',
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold
-          ),
+              color: Colors.white,
+              fontFamily: 'VarealRoundRegular',
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold),
         ),
+      ),
+      body: WebView(
+        initialUrl: airTmUrl,
       ),
     );
   }
